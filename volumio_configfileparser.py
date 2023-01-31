@@ -1,7 +1,7 @@
 # Copyright 2021 PeppyMeter for Volumio by 2aCD
-# 
+#
 # This file is part of PeppyMeter for Volumio
-# 
+#
 
 import os
 from configparser import ConfigParser
@@ -34,7 +34,7 @@ PLAY_TYPE_DIM = "playinfo.type.dimension"
 PLAY_SAMPLE_POS = "playinfo.samplerate.pos"
 PLAY_SAMPLE_STYLE = "PLAY_SAMPLE_STYLE"
 TIME_REMAINING_POS = "time.remaining.pos"
-TIMECOLOR = "time.remaining.color" 
+TIMECOLOR = "time.remaining.color"
 FONT_STYLE_B = "bold"
 FONT_STYLE_R = "regular"
 FONT_STYLE_L = "light"
@@ -46,16 +46,16 @@ FONTCOLOR = "font.color"
 
 class Volumio_ConfigFileParser(object):
     """ Configuration file parser """
-    
+
     def __init__(self, base_path):
-        """ Initializer """  
-              
+        """ Initializer """
+
         self.meter_config_volumio = {}
         c = ConfigParser()
-         
+
         peppy_meter_path = os.path.join(base_path, FILE_CONFIG)
         c.read(peppy_meter_path)
-                
+
         try:
             self.meter_config_volumio[FONT_PATH] = c.get(CURRENT, FONT_PATH)
         except:
@@ -68,17 +68,17 @@ class Volumio_ConfigFileParser(object):
             self.meter_config_volumio[FONT_REGULAR] = c.get(CURRENT, FONT_REGULAR)
         except:
             self.meter_config_volumio[FONT_REGULAR] = None
-        try:    
+        try:
             self.meter_config_volumio[FONT_BOLD] = c.get(CURRENT, FONT_BOLD)
         except:
             self.meter_config_volumio[FONT_BOLD] = None
-       
+
         meter_size = c.get(CURRENT, METER_SIZE)
         folder = os.path.join(base_path, meter_size)
         if not os.path.isdir(folder):
             print("Not supported screen size: " + meter_size)
             os._exit(0)
- 
+
         meter_config_path = os.path.join(base_path, meter_size, FILE_METER_CONFIG)
         if not os.path.exists(meter_config_path):
             print("Cannot read file: " + meter_config_path)
@@ -87,14 +87,14 @@ class Volumio_ConfigFileParser(object):
         c = ConfigParser()
         c.read(meter_config_path)
         available_meter_names = list()
-        
+
         for section in c.sections():
             self.meter_config_volumio[section] = self.get_common_options(c, section)
-        
-        
+
+
     def get_common_options(self, config_file, section):
         """ Parser for the common section of the configuration file
-        
+
         :param config_file: configuration file
         :param section: section name
         """
@@ -118,7 +118,7 @@ class Volumio_ConfigFileParser(object):
         except:
             d[ALBUMBORDER] = None
         try:
-            spl = config_file.get(section, PLAY_TITLE_POS).split(',')		
+            spl = config_file.get(section, PLAY_TITLE_POS).split(',')
             d[PLAY_TITLE_POS] = (int(spl[0]), int(spl[1]))
             d[PLAY_TITLE_STYLE] = spl[2]
         except:
@@ -145,10 +145,10 @@ class Volumio_ConfigFileParser(object):
         try:
             d[PLAY_MAX] = config_file.getint(section, PLAY_MAX)
         except:
-            d[PLAY_MAX] = None			
+            d[PLAY_MAX] = None
 
         try:
-            spl = config_file.get(section, PLAY_TYPE_POS).split(',')		
+            spl = config_file.get(section, PLAY_TYPE_POS).split(',')
             d[PLAY_TYPE_POS] = (int(spl[0]), int(spl[1]))
         except:
             d[PLAY_TYPE_POS] = None
@@ -156,14 +156,14 @@ class Volumio_ConfigFileParser(object):
             spl = config_file.get(section, PLAY_TYPE_COLOR).split(',')
             d[PLAY_TYPE_COLOR] = (int(spl[0]), int(spl[1]), int(spl[2]))
         except:
-            d[PLAY_TYPE_COLOR] = (255,255,255)			
+            d[PLAY_TYPE_COLOR] = (255,255,255)
         try:
             spl = config_file.get(section, PLAY_TYPE_DIM).split(',')
             d[PLAY_TYPE_DIM] =  (int(spl[0]), int(spl[1]))
         except:
             d[PLAY_TYPE_DIM] = None
         try:
-            spl = config_file.get(section, PLAY_SAMPLE_POS).split(',')		
+            spl = config_file.get(section, PLAY_SAMPLE_POS).split(',')
             d[PLAY_SAMPLE_POS] = (int(spl[0]), int(spl[1]))
             d[PLAY_SAMPLE_STYLE] = spl[2]
         except:
@@ -171,14 +171,14 @@ class Volumio_ConfigFileParser(object):
             d[PLAY_SAMPLE_STYLE] = FONT_STYLE_B
 
         try:
-            spl = config_file.get(section, TIME_REMAINING_POS).split(',')		
+            spl = config_file.get(section, TIME_REMAINING_POS).split(',')
             d[TIME_REMAINING_POS] = (int(spl[0]), int(spl[1]))
         except:
             d[TIME_REMAINING_POS] = None
         try:
             d[FONTSIZE_LIGHT] = config_file.getint(section, FONTSIZE_LIGHT)
         except:
-            d[FONTSIZE_LIGHT] = 30			
+            d[FONTSIZE_LIGHT] = 30
         try:
             d[FONTSIZE_REGULAR] = config_file.getint(section, FONTSIZE_REGULAR)
         except:
@@ -186,7 +186,7 @@ class Volumio_ConfigFileParser(object):
         try:
             d[FONTSIZE_BOLD] = config_file.getint(section, FONTSIZE_BOLD)
         except:
-            d[FONTSIZE_BOLD] = 40	
+            d[FONTSIZE_BOLD] = 40
         try:
             d[FONTSIZE_DIGI] = config_file.getint(section, FONTSIZE_DIGI)
         except:
@@ -195,11 +195,10 @@ class Volumio_ConfigFileParser(object):
             spl = config_file.get(section, FONTCOLOR).split(',')
             d[FONTCOLOR] = (int(spl[0]), int(spl[1]), int(spl[2]))
         except:
-            d[FONTCOLOR] = (255,255,255)	
+            d[FONTCOLOR] = (255,255,255)
         try:
             spl = config_file.get(section, TIMECOLOR).split(',')
             d[TIMECOLOR] = (int(spl[0]), int(spl[1]), int(spl[2]))
         except:
             d[TIMECOLOR] = (255,255,255)
         return d
-        
