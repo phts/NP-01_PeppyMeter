@@ -258,19 +258,17 @@ class ImageTitleFactory():
     def get_time_data(self, time_args, timer_init):
         """ get time data """
 
-        self.NoTime = False
         seek_current = int(float(time_args[1])/1000)
         # set initial to current and then count automatcally
         self.seek_new = seek_current if timer_init else self.seek_new + 1
 
-        # webradio has no time info
+        self.timecolor = self.meter_section[TIMECOLOR]
+
         if time_args[2] == 'webradio':
-            self.remain = time_args[0]
-            if time_args[0] == 0:
-                self.NoTime = True
+            self.remain = '--:--'
+            return
         else:
             self.remain = 0 if time_args[0] - self.seek_new <= 0 else time_args[0] - self.seek_new
-        self.timecolor = self.meter_section[TIMECOLOR]
         self.remain = '{:02d}:{:02d}'.format( self.remain // 60, self.remain %60)
 
     # render data functions
@@ -300,9 +298,7 @@ class ImageTitleFactory():
             self.imgTimeBackup = None
             self.imgTimeBackup = self.screen.subsurface(time_rect).copy()
         self.screen.blit(self.imgTimeBackup, time_rect)
-        # webradio has no time info
-        if self.NoTime == False:
-            self.screen.blit(imgDigi, time_rect)
+        self.screen.blit(imgDigi, time_rect)
         # update time rectangle
         self.base.update_rectangle(time_rect)
 
