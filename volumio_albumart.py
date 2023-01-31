@@ -270,7 +270,7 @@ class ImageTitleFactory():
                 self.NoTime = True
         else:
             self.remain = 0 if time_args[0] - self.seek_new <= 0 else time_args[0] - self.seek_new
-        self.timecolor = self.meter_section[TIMECOLOR] if self.remain > 10 else (242,0,0) # red for last 10 seconds
+        self.timecolor = self.meter_section[TIMECOLOR]
         self.remain = '{:02d}:{:02d}'.format( self.remain // 60, self.remain %60)
 
     # render data functions
