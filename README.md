@@ -1,6 +1,21 @@
+# PHTS NP-01: VU meter
+
+This is a modification of original [PeppyMeter](https://github.com/project-owner/PeppyMeter) which is used by [PHTS NP-01].
+
+Main changes:
+
+- Add missing files into the repo which are being copied into plugin directory during plugin installation
+- Do not render red counter when 10 seconds remaining
+- Render time as `--:--` for webradio
+
+---
+
+<details>
+<summary>README from original PeppyMeter</summary>
+
 ## Signac Edition 2022.10.16
 
-* Refactored the algorithms for circular and linear meters 
+* Refactored the algorithms for circular and linear meters
 * The changes allow to create vertical linear and  circular meters
 * The circular meter range can be more than 180 degrees now
 * Fixed rendering issues for several default meters
@@ -64,3 +79,7 @@ New features:
 PeppyMeter is a software VU Meter written in Python. It was originally developped as the new 'VU Meter' screensaver for [Peppy Player](https://github.com/project-owner/Peppy.doc/wiki). With minor modifications it became a stand-alone application.
 PeppyMeter gets audio data from media players (e.g. mpd) via fifo and displays current volume level in a Graphical User Interface
  in a form of traditional VU Meter.
+</details>
+
+[PeppyMeter]: https://github.com/project-owner/PeppyMeter
+[PHTS NP-01]: https://tsaryk.com/NP-01
