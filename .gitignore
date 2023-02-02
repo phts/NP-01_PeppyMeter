@@ -1,5 +1,11 @@
 __pycache__/
-/custom_*/
+custom_1 (800x480)/
+custom_2 (1024x600)/
+custom_3 (1280x800)/
+custom_4 (1920x1080)/
+custom_5 (1920x480)/
+custom_6 (1280x720)/
 fonts/
 
 *.log
+*.bak
