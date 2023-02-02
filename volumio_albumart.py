@@ -24,7 +24,7 @@ from configfileparser import METER
 from volumio_configfileparser import ALBUMART_POS, ALBUMART_DIM, ALBUMBORDER, PLAY_TITLE_POS, PLAY_ARTIST_POS, PLAY_ALBUM_POS, PLAY_CENTER, PLAY_MAX, \
   FONTSIZE_LIGHT, FONTSIZE_REGULAR, FONTSIZE_BOLD, FONTCOLOR, PLAY_TITLE_STYLE, PLAY_ARTIST_STYLE, PLAY_ALBUM_STYLE, FONT_STYLE_L, FONT_STYLE_R, FONT_STYLE_B, \
   FONT_PATH, FONT_LIGHT, FONT_REGULAR, FONT_BOLD, TIME_REMAINING_POS, FONTSIZE_DIGI, TIMECOLOR, \
-  PLAY_TYPE_POS, PLAY_TYPE_COLOR, PLAY_TYPE_DIM, PLAY_SAMPLE_POS, PLAY_SAMPLE_STYLE, EXTENDED_CONF
+  PLAY_TYPE_POS, PLAY_TYPE_COLOR, PLAY_TYPE_DIM, PLAY_SAMPLE_POS, PLAY_SAMPLE_STYLE, EXTENDED_CONF, TIME_TYPE
 
 
 class AlbumartAnimator(Thread):
@@ -94,30 +94,28 @@ class AlbumartAnimator(Thread):
             else:
                 self.status_mem = 'other'
 
-
         def remaining_time():
-            title_factory.get_time_data(self.time_args, self.timer_initial)
-            title_factory.render_time(self.first_run_digi)
+            time = title_factory.get_time_data(self.time_args, self.timer_initial)
+            title_factory.render_time(time, self.first_run_digi)
+            self.timer_initial = False
+            self.first_run_digi = False
 
-            self.timer_initial = False # countdown without new input values
+        def counter():
+            counter = title_factory.get_counter_data(self.time_args, self.timer_initial)
+            title_factory.render_time(counter, self.first_run_digi)
+            self.timer_initial = False
             self.first_run_digi = False
 
         def on_connect():
-            #print('connect')
             socketIO.on('pushState', on_push_state)
             socketIO.emit('getState', '', on_push_state)
-
-        #def on_disconnect():
-            # print('disconnect')
-            # stop all ticker daemons
-            #title_factory.stop_text_animator()
-            #timer.cancel()
 
         self.albumart_mem = ''
         self.status_mem = 'pause'
         self.first_run = True
         self.first_run_digi = True
-        timer = RepeatTimer(1, remaining_time)
+        time_type = self.meter_section[TIME_TYPE]
+        timer = RepeatTimer(1, counter if time_type  == 'counter' else remaining_time)
 
         if self.meter_section[EXTENDED_CONF] == True:
             title_factory = ImageTitleFactory(self.util, self.base, self.meter_config_volumio)
@@ -256,20 +254,21 @@ class ImageTitleFactory():
 
 
     def get_time_data(self, time_args, timer_init):
-        """ get time data """
-
-        seek_current = int(float(time_args[1])/1000)
-        # set initial to current and then count automatcally
-        self.seek_new = seek_current if timer_init else self.seek_new + 1
-
-        self.timecolor = self.meter_section[TIMECOLOR]
-
         if time_args[2] == 'webradio':
-            self.remain = '--:--'
-            return
-        else:
-            self.remain = 0 if time_args[0] - self.seek_new <= 0 else time_args[0] - self.seek_new
-        self.remain = '{:02d}:{:02d}'.format( self.remain // 60, self.remain %60)
+            return '--:--'
+        seek_current = int(float(time_args[1])/1000)
+        self.seek_new = seek_current if timer_init else self.seek_new + 1
+        r = time_args[0] - self.seek_new
+        if r <= 0: r = 0
+        return '{:02d}:{:02d}'.format(r // 60, r % 60)
+
+    def get_counter_data(self, time_args, timer_init):
+        if time_args[2] == 'webradio':
+            return '---'
+        seek_current = int(float(time_args[1])/1000)
+        self.seek_new = seek_current if timer_init else self.seek_new + 1
+        if self.seek_new > 999: self.seek_new = self.seek_new % 1000
+        return '{:03d}'.format(self.seek_new)
 
     # render data functions
     # ----------------------------------
@@ -288,10 +287,8 @@ class ImageTitleFactory():
             # update albumart rectangle
             self.base.update_rectangle(aa_rect)
 
-    def render_time(self, firstrun):
-        """ render time info """
-
-        imgDigi = self.fontDigi.render(self.remain, True, self.timecolor)
+    def render_time(self, time, firstrun):
+        imgDigi = self.fontDigi.render(time, True, self.meter_section[TIMECOLOR])
         time_rect = pg.Rect(self.meter_section[TIME_REMAINING_POS][0], self.meter_section[TIME_REMAINING_POS][1], imgDigi.get_width(), self.fontDigi.get_height())
 
         if firstrun: # backup clean area on first run

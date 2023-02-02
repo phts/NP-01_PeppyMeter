@@ -33,6 +33,7 @@ PLAY_TYPE_COLOR = "playinfo.type.color"
 PLAY_TYPE_DIM = "playinfo.type.dimension"
 PLAY_SAMPLE_POS = "playinfo.samplerate.pos"
 PLAY_SAMPLE_STYLE = "PLAY_SAMPLE_STYLE"
+TIME_TYPE = "time.type"
 TIME_REMAINING_POS = "time.remaining.pos"
 TIMECOLOR = "time.remaining.color"
 FONT_STYLE_B = "bold"
@@ -201,4 +202,8 @@ class Volumio_ConfigFileParser(object):
             d[TIMECOLOR] = (int(spl[0]), int(spl[1]), int(spl[2]))
         except:
             d[TIMECOLOR] = (255,255,255)
+        try:
+            d[TIME_TYPE] = config_file.get(section, TIME_TYPE)
+        except:
+            d[TIME_TYPE] = "remaining"
         return d

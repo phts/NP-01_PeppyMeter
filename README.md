@@ -7,6 +7,7 @@ Main changes:
 - Add missing files into the repo which are being copied into plugin directory during plugin installation
 - Do not render red counter when 10 seconds remaining
 - Render time as `--:--` for webradio
+- Add time type "counter"
 
 ---
 
