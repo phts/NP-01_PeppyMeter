@@ -80,14 +80,12 @@ class AlbumartAnimator(Thread):
                     self.first_run = False
                 self.status_mem = 'play'
 
-            # simulate mouse event, if pause pressed
             elif args[0]['status'] == 'pause' and self.status_mem == 'play':
-                #print ('pause')
                 self.status_mem = 'pause'
                 pg.event.post(pg.event.Event(pg.MOUSEBUTTONUP))
 
-            # simulate mouse event, if stop pressed for webradio
-            elif args[0]['service'] == 'webradio' and args[0]['status'] == 'stop' and self.status_mem == 'play':
+            elif args[0]['status'] == 'stop' and self.status_mem == 'play':
+                # stop pressed for webradio / end of playlist
                 self.status_mem = 'stop'
                 pg.event.post(pg.event.Event(pg.MOUSEBUTTONUP))
 
@@ -219,7 +217,6 @@ class ImageTitleFactory():
     # ----------------------------------
     def get_title_data(self, play_info):
         """ get title infos from argument """
-        #print(play_info)
         if hasattr(self, 'playinfo_title'):
             self.titleMem = self.playinfo_title
         self.playinfo_title = play_info['title'] if play_info['title'] is not None else ''
@@ -245,7 +242,6 @@ class ImageTitleFactory():
         if 'http' not in albumart:
             albumart = 'http://localhost:3000' + play_info
 
-        #print (albumart)
         response = requests.get(albumart)
         self.aa_img = None
         self.aa_img = pg.image.load(io.BytesIO(response.content))
@@ -402,7 +398,6 @@ class ImageTitleFactory():
             # title info
             if self.meter_section[PLAY_TITLE_POS] and self.meter_section[PLAY_MAX]:
                 title_rect = pg.Rect(self.meter_section[PLAY_TITLE_POS], (self.meter_section[PLAY_MAX], imgTitle_long.get_height()))
-                #print(imgTitle_long.get_height())
                 if firstrun: # backup clean area on first run
                     self.imgTitleBackup = None
                     self.imgTitleBackup = self.screen.subsurface(title_rect).copy()
