@@ -1,6 +1,6 @@
 # PHTS NP-01: VU meter
 
-This is a modification of original [PeppyMeter](https://github.com/project-owner/PeppyMeter) which is used by [PHTS NP-01].
+This is a modification of original [PeppyMeter] which is used by [PHTS NP-01].
 
 Main changes:
 
@@ -12,7 +12,7 @@ Main changes:
 ---
 
 <details>
-<summary>README from original PeppyMeter</summary>
+<summary>README from original repo</summary>
 
 ## Signac Edition 2022.10.16
 
