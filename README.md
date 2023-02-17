@@ -8,6 +8,7 @@ Main changes:
 - Do not render red counter when 10 seconds remaining
 - Render time as `--:--` for webradio
 - Add time type "counter"
+- [...and more](https://github.com/phts/NP-01_vu-meter/commits/master)
 
 ---
 
