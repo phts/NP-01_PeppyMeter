@@ -223,7 +223,7 @@ class ImageTitleFactory():
         self.playinfo_artist = play_info['artist'] if play_info['artist'] is not None else ''
         self.playinfo_album = play_info['album'] if play_info['album'] is not None else ''
         self.playinfo_trackT = play_info['trackType'] if play_info['trackType'] is not None else ''
-        self.playinfo_sample = play_info['samplerate'] if 'samplerate' in play_info and play_info['samplerate'] is not None else ''
+        self.playinfo_sample = str(play_info['samplerate']) if 'samplerate' in play_info and play_info['samplerate'] is not None else ''
         self.playinfo_depth = play_info['bitdepth'] if 'bitdepth' in play_info and play_info['bitdepth'] is not None else ''
         playinfo_rate = play_info['bitrate'] if 'bitrate' in play_info and play_info['bitrate'] is not None else ''
         if self.playinfo_sample =='':
