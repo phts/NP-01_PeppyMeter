@@ -234,20 +234,20 @@ class ImageTitleFactory():
             self.playinfo_trackT = 'dsd'
 
     def get_albumart_data(self, play_info):
-        """ get albumart infos from argument """
+        try:
+            albumart = play_info
+            if len(albumart) == 0:
+                albumart = 'http://localhost:3000/albumart'
+            if 'http' not in albumart:
+                albumart = 'http://localhost:3000' + play_info
 
-        albumart = play_info
-        if len(albumart) == 0:
-            albumart = 'http://localhost:3000/albumart'
-        if 'http' not in albumart:
-            albumart = 'http://localhost:3000' + play_info
-
-        response = requests.get(albumart)
-        self.aa_img = None
-        self.aa_img = pg.image.load(io.BytesIO(response.content))
-        if self.meter_section[ALBUMART_DIM]:
-            self.aa_img = pg.transform.scale(self.aa_img, self.meter_section[ALBUMART_DIM])
-
+            response = requests.get(albumart)
+            self.aa_img = None
+            self.aa_img = pg.image.load(io.BytesIO(response.content))
+            if self.meter_section[ALBUMART_DIM]:
+                self.aa_img = pg.transform.scale(self.aa_img, self.meter_section[ALBUMART_DIM])
+        except:
+            self.aa_img = None
 
     def get_time_data(self, time_args, timer_init):
         if time_args[2] == 'webradio':
