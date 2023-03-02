@@ -225,6 +225,7 @@ class ImageTitleFactory():
         self.playinfo_trackT = play_info['trackType'] if play_info['trackType'] is not None else ''
         self.playinfo_sample = str(play_info['samplerate']) if 'samplerate' in play_info and play_info['samplerate'] is not None else ''
         self.playinfo_depth = play_info['bitdepth'] if 'bitdepth' in play_info and play_info['bitdepth'] is not None else ''
+        self.playinfo_number = str(play_info['position'] + 1).rjust(2, '0') + '. ' if 'position' in play_info and play_info['position'] is not None else ''
         playinfo_rate = play_info['bitrate'] if 'bitrate' in play_info and play_info['bitrate'] is not None else ''
         if self.playinfo_sample =='':
             self.playinfo_sample = playinfo_rate # for webradio
@@ -323,7 +324,7 @@ class ImageTitleFactory():
             self.base.update_rectangle(rect)
 
         # title, artist, album
-        imgTitle_long = render_txt(self.playinfo_title, self.meter_section[PLAY_TITLE_STYLE])
+        imgTitle_long = render_txt(self.playinfo_number + self.playinfo_title, self.meter_section[PLAY_TITLE_STYLE])
         imgArtist_long = render_txt(self.playinfo_artist, self.meter_section[PLAY_ARTIST_STYLE])
         imgAlbum_long = render_txt(self.playinfo_album, self.meter_section[PLAY_ALBUM_STYLE])
 
