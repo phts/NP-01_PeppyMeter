@@ -201,7 +201,7 @@ class ImageTitleFactory():
         if os.path.exists(FontPath + self.meter_config[FONT_BOLD]):
             self.fontB = pg.font.Font(FontPath + self.meter_config[FONT_BOLD], self.meter_section[FONTSIZE_BOLD])
         else:
-            self.fontB = pg.font.SysFont(None, 70, bold=True)
+            self.fontB = pg.font.SysFont(None, 70)
 
         # digital font for remaining time
         self.FontDigi = None
