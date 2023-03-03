@@ -225,7 +225,7 @@ class ImageTitleFactory():
         self.playinfo_trackT = play_info['trackType'] if play_info['trackType'] is not None else ''
         self.playinfo_sample = str(play_info['samplerate']) if 'samplerate' in play_info and play_info['samplerate'] is not None else ''
         self.playinfo_depth = play_info['bitdepth'] if 'bitdepth' in play_info and play_info['bitdepth'] is not None else ''
-        self.playinfo_number = str(play_info['position'] + 1).rjust(2, '0') + '. ' if 'position' in play_info and play_info['position'] is not None else ''
+        self.playinfo_number = str(play_info['position'] + 1).rjust(2, '0') + '. ' if self.playinfo_trackT != 'webradio' and 'position' in play_info and play_info['position'] is not None else ''
         playinfo_rate = play_info['bitrate'] if 'bitrate' in play_info and play_info['bitrate'] is not None else ''
         if self.playinfo_sample =='':
             self.playinfo_sample = playinfo_rate # for webradio
