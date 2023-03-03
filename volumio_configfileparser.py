@@ -33,6 +33,7 @@ PLAY_TYPE_COLOR = "playinfo.type.color"
 PLAY_TYPE_DIM = "playinfo.type.dimension"
 PLAY_SAMPLE_POS = "playinfo.samplerate.pos"
 PLAY_SAMPLE_STYLE = "PLAY_SAMPLE_STYLE"
+PLAY_SAMPLE_RIGHT = "playinfo.samplerate.right-align"
 TIME_TYPE = "time.type"
 TIME_REMAINING_POS = "time.remaining.pos"
 TIMECOLOR = "time.remaining.color"
@@ -143,6 +144,10 @@ class Volumio_ConfigFileParser(object):
             d[PLAY_CENTER] = config_file.getboolean(section, PLAY_CENTER)
         except:
             d[PLAY_CENTER] = False
+        try:
+            d[PLAY_SAMPLE_RIGHT] = config_file.getboolean(section, PLAY_SAMPLE_RIGHT)
+        except:
+            d[PLAY_SAMPLE_RIGHT] = False
         try:
             d[PLAY_MAX] = config_file.getint(section, PLAY_MAX)
         except:

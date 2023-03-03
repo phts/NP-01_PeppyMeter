@@ -25,7 +25,7 @@ from configfileparser import METER
 from volumio_configfileparser import ALBUMART_POS, ALBUMART_DIM, ALBUMBORDER, PLAY_TITLE_POS, PLAY_ARTIST_POS, PLAY_ALBUM_POS, PLAY_CENTER, PLAY_MAX, \
   FONTSIZE_LIGHT, FONTSIZE_REGULAR, FONTSIZE_BOLD, FONTCOLOR, PLAY_TITLE_STYLE, PLAY_ARTIST_STYLE, PLAY_ALBUM_STYLE, FONT_STYLE_L, FONT_STYLE_R, FONT_STYLE_B, \
   FONT_PATH, FONT_LIGHT, FONT_REGULAR, FONT_BOLD, TIME_REMAINING_POS, FONTSIZE_DIGI, TIMECOLOR, \
-  PLAY_TYPE_POS, PLAY_TYPE_COLOR, PLAY_TYPE_DIM, PLAY_SAMPLE_POS, PLAY_SAMPLE_STYLE, EXTENDED_CONF, TIME_TYPE
+  PLAY_TYPE_POS, PLAY_TYPE_COLOR, PLAY_TYPE_DIM, PLAY_SAMPLE_POS, PLAY_SAMPLE_STYLE, PLAY_SAMPLE_RIGHT, EXTENDED_CONF, TIME_TYPE
 
 
 class AlbumartAnimator(Thread):
@@ -331,15 +331,17 @@ class ImageTitleFactory():
         imgAlbum_long = render_txt(self.playinfo_album, self.meter_section[PLAY_ALBUM_STYLE])
 
         # samplerate + bitdepth
+        text = self.playinfo_sample + " " + self.playinfo_depth).rstrip()
+        maxText = "-44.1 kHz 24 bit-"
         if self.meter_section[PLAY_SAMPLE_STYLE] == FONT_STYLE_R:
-            imgSample_long = self.fontR.render((self.playinfo_sample + " " + self.playinfo_depth).rstrip(), True, self.meter_section[PLAY_TYPE_COLOR] )
-            imgSample_size = self.fontR.size("-44.1 kHz 24 bit-") # max widht to create rectangle for clear area
+            img_samplerate = self.fontR.render(text, True, self.meter_section[PLAY_TYPE_COLOR] )
+            max_text_size = self.fontR.size(maxText)
         elif self.meter_section[PLAY_SAMPLE_STYLE] == FONT_STYLE_B:
-            imgSample_long = self.fontB.render((self.playinfo_sample + " " + self.playinfo_depth).rstrip(), True, self.meter_section[PLAY_TYPE_COLOR] )
-            imgSample_size = self.fontB.size("-44.1 kHz 24 bit-") # max widht to create rectangle for clear area
+            img_samplerate = self.fontB.render(text, True, self.meter_section[PLAY_TYPE_COLOR] )
+            max_text_size = self.fontB.size(maxText)
         else:
-            imgSample_long = self.fontL.render((self.playinfo_sample + " " + self.playinfo_depth).rstrip(), True, self.meter_section[PLAY_TYPE_COLOR] )
-            imgSample_size = self.fontL.size("-44.1 kHz 24 bit-") # max widht to create rectangle for clear area
+            img_samplerate = self.fontL.render(text, True, self.meter_section[PLAY_TYPE_COLOR] )
+            max_text_size = self.fontL.size(maxText)
 
         if self.titleMem != self.playinfo_title: # only if title changed
 
@@ -445,21 +447,25 @@ class ImageTitleFactory():
 
         # frame rate info
         if self.meter_section[PLAY_SAMPLE_POS]:
-            sample_pos_bk = self.meter_section[PLAY_SAMPLE_POS][0]
-            sample_pos = self.meter_section[PLAY_SAMPLE_POS][0]
-            # center sample position
-            if self.meter_section[PLAY_CENTER] == True:
-                sample_pos_bk += int((self.meter_section[PLAY_MAX] - imgSample_size[0])/2)
-                sample_pos += int((self.meter_section[PLAY_MAX] - imgSample_long.get_width())/2)
-            sample_rect = pg.Rect((sample_pos_bk, self.meter_section[PLAY_SAMPLE_POS][1]), imgSample_size)
+            if self.meter_section[PLAY_SAMPLE_RIGHT] == True:
+                sample_pos_x = self.meter_section[PLAY_SAMPLE_POS][0] - img_samplerate.get_width()
+                sample_max_pos_x = self.meter_section[PLAY_SAMPLE_POS][0] - max_text_size[0]
+                sample_rect = pg.Rect((sample_pos_x, self.meter_section[PLAY_SAMPLE_POS][1]), img_samplerate.get_size())
+                sample_max_rect = pg.Rect((sample_max_pos_x, self.meter_section[PLAY_SAMPLE_POS][1]), max_text_size)
+            else:
+                sample_pos_bk = self.meter_section[PLAY_SAMPLE_POS][0]
+                sample_pos_x = self.meter_section[PLAY_SAMPLE_POS][0]
+                if self.meter_section[PLAY_CENTER] == True:
+                    sample_pos_bk += int((self.meter_section[PLAY_MAX] - max_text_size[0])/2)
+                    sample_pos_x += int((self.meter_section[PLAY_MAX] - img_samplerate.get_width())/2)
+                sample_rect = pg.Rect((sample_pos_bk, self.meter_section[PLAY_SAMPLE_POS][1]), max_text_size)
+                sample_max_rect = sample_rect
 
             if firstrun: # backup clean area on first run
-                self.imgSampleBackup = None
-                self.imgSampleBackup = self.screen.subsurface(sample_rect).copy()
-            self.screen.blit(self.imgSampleBackup, sample_rect)
-            #pg.draw.rect(self.screen, (200,200,200), sample_rect)
-            self.screen.blit(imgSample_long, (sample_pos, sample_rect.y))
-            # update sample rectangle
+                self.empty_samplerate_area = None
+                self.empty_samplerate_area = self.screen.subsurface(sample_max_rect).copy()
+            self.screen.blit(self.empty_samplerate_area, sample_max_rect)
+            self.screen.blit(img_samplerate, (sample_pos_x, sample_rect.y))
             self.base.update_rectangle(sample_rect)
 
     # text animator functions
