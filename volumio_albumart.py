@@ -9,6 +9,7 @@ import pygame as pg
 import requests
 import io
 import ctypes
+import logging
 
 try:
     import cairosvg
@@ -47,97 +48,99 @@ class AlbumartAnimator(Thread):
 
     def run(self):
         """ Thread method. show all title infos and albumart. """
+        try:
+            def on_push_state(*args):
+                if args[0]['status'] == 'play':
+                    if self.meter_section[EXTENDED_CONF] == True:
+                        # draw albumart
+                        if args[0]['albumart'] != self.albumart_mem:
+                            self.albumart_mem = args[0]['albumart']
+                            title_factory.get_albumart_data(self.albumart_mem)
+                            title_factory.render_aa(self.first_run)
 
-        def on_push_state(*args):
+                        # draw title info
+                        title_factory.get_title_data(args[0])
+                        title_factory.render_text(self.first_run)
 
-            if args[0]['status'] == 'play':
+                        # draw reamining time, timer is started for countdown
+                        if self.meter_section[TIME_REMAINING_POS]:
+                            duration = args[0]['duration'] if 'duration' in args[0] else 0
+                            seek = args[0]['seek'] if 'seek' in args[0] and args[0]['seek'] is not None else 0
+                            service = args[0]['service'] if 'service' in args[0] else ''
+                            self.time_args = [duration, seek, service]
 
-                if self.meter_section[EXTENDED_CONF] == True:
-                    # draw albumart
-                    if args[0]['albumart'] != self.albumart_mem:
-                        self.albumart_mem = args[0]['albumart']
-                        title_factory.get_albumart_data(self.albumart_mem)
-                        title_factory.render_aa(self.first_run)
+                            # repeat timer start, initial with duration and seek -> remaining_time
+                            try:
+                                self.timer_initial = True
+                                timer.start()
+                            except:
+                                pass
 
-                    # draw title info
-                    title_factory.get_title_data(args[0])
-                    title_factory.render_text(self.first_run)
+                        self.first_run = False
+                    self.status_mem = 'play'
 
-                    # draw reamining time, timer is started for countdown
-                    if self.meter_section[TIME_REMAINING_POS]:
-                        duration = args[0]['duration'] if 'duration' in args[0] else 0
-                        seek = args[0]['seek'] if 'seek' in args[0] and args[0]['seek'] is not None else 0
-                        service = args[0]['service'] if 'service' in args[0] else ''
-                        self.time_args = [duration, seek, service]
+                elif args[0]['status'] == 'pause' and self.status_mem == 'play':
+                    self.status_mem = 'pause'
+                    pg.event.post(pg.event.Event(pg.MOUSEBUTTONUP))
 
-                        # repeat timer start, initial with duration and seek -> remaining_time
-                        try:
-                            self.timer_initial = True
-                            timer.start()
-                        except:
-                            pass
+                elif args[0]['status'] == 'stop' and self.status_mem == 'play':
+                    # stop pressed for webradio / end of playlist
+                    self.status_mem = 'stop'
+                    pg.event.post(pg.event.Event(pg.MOUSEBUTTONUP))
 
-                    self.first_run = False
-                self.status_mem = 'play'
+                else:
+                    self.status_mem = 'other'
 
-            elif args[0]['status'] == 'pause' and self.status_mem == 'play':
-                self.status_mem = 'pause'
-                pg.event.post(pg.event.Event(pg.MOUSEBUTTONUP))
+            def remaining_time():
+                time = title_factory.get_time_data(self.time_args, self.timer_initial)
+                title_factory.render_time(time, self.first_run_digi)
+                self.timer_initial = False
+                self.first_run_digi = False
 
-            elif args[0]['status'] == 'stop' and self.status_mem == 'play':
-                # stop pressed for webradio / end of playlist
-                self.status_mem = 'stop'
-                pg.event.post(pg.event.Event(pg.MOUSEBUTTONUP))
+            def counter():
+                counter = title_factory.get_counter_data(self.time_args, self.timer_initial)
+                title_factory.render_time(counter, self.first_run_digi)
+                self.timer_initial = False
+                self.first_run_digi = False
 
+            def on_connect():
+                socketIO.on('pushState', on_push_state)
+                socketIO.emit('getState', '', on_push_state)
+
+            self.albumart_mem = ''
+            self.status_mem = 'pause'
+            self.first_run = True
+            self.first_run_digi = True
+            time_type = self.meter_section[TIME_TYPE]
+            timer = RepeatTimer(1, counter if time_type  == 'counter' else remaining_time)
+
+            if self.meter_section[EXTENDED_CONF] == True:
+                title_factory = ImageTitleFactory(self.util, self.base, self.meter_config_volumio)
+                title_factory.load_fonts() # load fonts for title info
             else:
-                self.status_mem = 'other'
+                title_factory = None
 
-        def remaining_time():
-            time = title_factory.get_time_data(self.time_args, self.timer_initial)
-            title_factory.render_time(time, self.first_run_digi)
-            self.timer_initial = False
-            self.first_run_digi = False
+            socketIO = SocketIO('localhost', 3000)
+            socketIO.once('connect', on_connect)
 
-        def counter():
-            counter = title_factory.get_counter_data(self.time_args, self.timer_initial)
-            title_factory.render_time(counter, self.first_run_digi)
-            self.timer_initial = False
-            self.first_run_digi = False
+            # wait while run_flag true
+            while self.run_flag:
+                socketIO.wait(1)
 
-        def on_connect():
-            socketIO.on('pushState', on_push_state)
-            socketIO.emit('getState', '', on_push_state)
+            # on exit
+            socketIO.disconnect()
+            if self.meter_section[EXTENDED_CONF] == True:
+                title_factory.stop_text_animator()
+                timer.cancel()
+                del timer
+                time.sleep(1)
 
-        self.albumart_mem = ''
-        self.status_mem = 'pause'
-        self.first_run = True
-        self.first_run_digi = True
-        time_type = self.meter_section[TIME_TYPE]
-        timer = RepeatTimer(1, counter if time_type  == 'counter' else remaining_time)
+            cleanup_memory()
+        except Exception as e:
+            logging.error(e)
+            cleanup_memory()
 
-        if self.meter_section[EXTENDED_CONF] == True:
-            title_factory = ImageTitleFactory(self.util, self.base, self.meter_config_volumio)
-            title_factory.load_fonts() # load fonts for title info
-        else:
-            title_factory = None
-
-        socketIO = SocketIO('localhost', 3000)
-        socketIO.once('connect', on_connect)
-        #socketIO.on('disconnect', on_disconnect)
-
-        # wait while run_flag true
-        while self.run_flag:
-            socketIO.wait(1)
-
-        # on exit
-        socketIO.disconnect()
-        if self.meter_section[EXTENDED_CONF] == True:
-            title_factory.stop_text_animator()
-            timer.cancel()
-            del timer
-            time.sleep(1)
-
-        # cleanup memory
+    def cleanup_memory(self):
         del title_factory
         del self.screen
         del self.base
@@ -145,7 +148,6 @@ class AlbumartAnimator(Thread):
         del self.meter_config
         del socketIO
         self.trim_memory()
-        # exit -->
 
     def stop_thread(self):
         """ Stop thread """
