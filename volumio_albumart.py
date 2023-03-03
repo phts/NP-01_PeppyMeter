@@ -228,9 +228,7 @@ class ImageTitleFactory():
         self.playinfo_sample = str(play_info['samplerate']) if 'samplerate' in play_info and play_info['samplerate'] is not None else ''
         self.playinfo_depth = play_info['bitdepth'] if 'bitdepth' in play_info and play_info['bitdepth'] is not None else ''
         self.playinfo_number = str(play_info['position'] + 1).rjust(2, '0') + '. ' if self.playinfo_trackT != 'webradio' and 'position' in play_info and play_info['position'] is not None else ''
-        playinfo_rate = play_info['bitrate'] if 'bitrate' in play_info and play_info['bitrate'] is not None else ''
-        if self.playinfo_sample =='':
-            self.playinfo_sample = playinfo_rate # for webradio
+        self.playinfo_bitrate = play_info['bitrate'] if 'bitrate' in play_info and play_info['bitrate'] is not None else ''
         if not self.meter_section[PLAY_ALBUM_POS] and self.playinfo_album != '':
             self.playinfo_artist = self.playinfo_artist + " - " + self.playinfo_album
         if self.playinfo_trackT == 'dsf':
@@ -330,9 +328,9 @@ class ImageTitleFactory():
         imgArtist_long = render_txt(self.playinfo_artist, self.meter_section[PLAY_ARTIST_STYLE])
         imgAlbum_long = render_txt(self.playinfo_album, self.meter_section[PLAY_ALBUM_STYLE])
 
-        # samplerate + bitdepth
-        text = self.playinfo_sample + " " + self.playinfo_depth).rstrip()
-        maxText = "-44.1 kHz 24 bit-"
+        # bitrate + samplerate + bitdepth
+        text = ", ".join(filter(None, [self.playinfo_bitrate, self.playinfo_sample, self.playinfo_depth])).strip()
+        maxText = "==888 Kbps, 88.8 kHz, 88 bit=="
         if self.meter_section[PLAY_SAMPLE_STYLE] == FONT_STYLE_R:
             img_samplerate = self.fontR.render(text, True, self.meter_section[PLAY_TYPE_COLOR] )
             max_text_size = self.fontR.size(maxText)
@@ -407,7 +405,6 @@ class ImageTitleFactory():
                     self.imgTitleBackup = None
                     self.imgTitleBackup = self.screen.subsurface(title_rect).copy()
                 self.screen.blit(self.imgTitleBackup, title_rect)
-                #pg.draw.rect(self.screen, (200,200,200), title_rect)
 
                 if imgTitle_long.get_width() - 5 <= title_rect.width:
                     update_txt(imgTitle_long, title_rect)
