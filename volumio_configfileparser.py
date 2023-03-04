@@ -20,6 +20,7 @@ EXTENDED_CONF = "config.extend"
 ALBUMART_POS = "albumart.pos"
 ALBUMART_DIM = "albumart.dimension"
 ALBUMBORDER = "albumart.border"
+PLAY_ANIMATION = "playinfo.animation"
 PLAY_TITLE_POS = "playinfo.title.pos"
 PLAY_ARTIST_POS = "playinfo.artist.pos"
 PLAY_ALBUM_POS = "playinfo.album.pos"
@@ -119,6 +120,10 @@ class Volumio_ConfigFileParser(object):
             d[ALBUMBORDER] = config_file.getint(section, ALBUMBORDER)
         except:
             d[ALBUMBORDER] = None
+        try:
+            d[PLAY_ANIMATION] = config_file.getboolean(section, PLAY_ANIMATION)
+        except:
+            d[PLAY_ANIMATION] = True
         try:
             spl = config_file.get(section, PLAY_TITLE_POS).split(',')
             d[PLAY_TITLE_POS] = (int(spl[0]), int(spl[1]))

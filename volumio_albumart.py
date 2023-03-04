@@ -22,7 +22,7 @@ from threading import Thread, Timer
 from configparser import ConfigParser
 
 from configfileparser import METER
-from volumio_configfileparser import ALBUMART_POS, ALBUMART_DIM, ALBUMBORDER, PLAY_TITLE_POS, PLAY_ARTIST_POS, PLAY_ALBUM_POS, PLAY_CENTER, PLAY_MAX, \
+from volumio_configfileparser import ALBUMART_POS, ALBUMART_DIM, ALBUMBORDER, PLAY_ANIMATION, PLAY_TITLE_POS, PLAY_ARTIST_POS, PLAY_ALBUM_POS, PLAY_CENTER, PLAY_MAX, \
   FONTSIZE_LIGHT, FONTSIZE_REGULAR, FONTSIZE_BOLD, FONTCOLOR, PLAY_TITLE_STYLE, PLAY_ARTIST_STYLE, PLAY_ALBUM_STYLE, FONT_STYLE_L, FONT_STYLE_R, FONT_STYLE_B, \
   FONT_PATH, FONT_LIGHT, FONT_REGULAR, FONT_BOLD, TIME_REMAINING_POS, FONTSIZE_DIGI, TIMECOLOR, \
   PLAY_TYPE_POS, PLAY_TYPE_COLOR, PLAY_TYPE_DIM, PLAY_SAMPLE_POS, PLAY_SAMPLE_STYLE, PLAY_SAMPLE_RIGHT, EXTENDED_CONF, TIME_TYPE
@@ -406,7 +406,7 @@ class ImageTitleFactory():
                     self.imgTitleBackup = self.screen.subsurface(title_rect).copy()
                 self.screen.blit(self.imgTitleBackup, title_rect)
 
-                if imgTitle_long.get_width() - 5 <= title_rect.width:
+                if imgTitle_long.get_width() - 5 <= title_rect.width or self.meter_section[PLAY_ANIMATION] == False:
                     update_txt(imgTitle_long, title_rect)
                 else: # start ticker daemon title
                     self.text_animator_title = None
@@ -421,7 +421,7 @@ class ImageTitleFactory():
                 self.screen.blit(self.imgArtistBackup, artist_rect)
                 #pg.draw.rect(self.screen, (200,200,200), artist_rect)
 
-                if imgArtist_long.get_width() - 5 <= artist_rect.width:
+                if imgArtist_long.get_width() - 5 <= artist_rect.width or self.meter_section[PLAY_ANIMATION] == False:
                     update_txt(imgArtist_long, artist_rect)
                 else: # start ticker daemon artist
                     self.text_animator_artist = None
@@ -436,7 +436,7 @@ class ImageTitleFactory():
                 self.screen.blit(self.imgAlbumBackup, album_rect)
                 #pg.draw.rect(self.screen, (200,200,200), album_rect)
 
-                if imgAlbum_long.get_width() - 5 <= album_rect.width:
+                if imgAlbum_long.get_width() - 5 <= album_rect.width or self.meter_section[PLAY_ANIMATION] == False:
                     update_txt(imgAlbum_long, album_rect)
                 else: # start ticker daemon album
                     self.text_animator_album = None
