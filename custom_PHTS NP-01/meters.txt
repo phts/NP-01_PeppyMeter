@@ -14,9 +14,9 @@ step.width.regular = 56
 step.width.overload = 56
 meter.x = 0
 meter.y = 0
-screen.bgr = dash-ext.jpg
+screen.bgr =
 
-[Radiotehnika У-7101]
+[Radiotehnika У-7101 (indicators only)]
 meter.type = linear
 channels = 2
 ui.refresh.period = 0.033
@@ -32,9 +32,9 @@ step.width.regular = 32
 step.width.overload = 37
 meter.x = 0
 meter.y = 0
-screen.bgr = dash-ext.jpg
+screen.bgr =
 
-[Radiotehnika МП-7201 (1)]
+[Radiotehnika МП-7201 (1 bar/no counter/no album art)]
 meter.type = linear
 channels = 2
 ui.refresh.period = 0.033
@@ -50,9 +50,9 @@ step.width.regular = 32
 step.width.overload = 37
 meter.x = 0
 meter.y = 0
-screen.bgr = dash-ext.jpg
+screen.bgr =
 
-[Radiotehnika МП-7201 (2)]
+[Radiotehnika МП-7201 (2 bars/no counter/no album art)]
 meter.type = linear
 channels = 2
 ui.refresh.period = 0.033
@@ -68,9 +68,9 @@ step.width.regular = 32
 step.width.overload = 37
 meter.x = 0
 meter.y = 0
-screen.bgr = dash-ext.jpg
+screen.bgr =
 
-[Radiotehnika МП-7201 (3)]
+[Radiotehnika МП-7201 (remaining time/album art - top)]
 meter.type = linear
 channels = 2
 ui.refresh.period = 0.033
@@ -111,7 +111,7 @@ font.size.regular = 24
 font.size.bold = 36
 font.color = 255,255,255
 
-[Radiotehnika МП-7201 (4)]
+[Radiotehnika МП-7201 (remaining time/album art - bottom)]
 meter.type = linear
 channels = 2
 ui.refresh.period = 0.033
@@ -152,7 +152,7 @@ font.size.regular = 24
 font.size.bold = 36
 font.color = 255,255,255
 
-[Radiotehnika МП-7201 (5)]
+[Radiotehnika МП-7201 (counter/album art - bottom)]
 meter.type = linear
 channels = 2
 ui.refresh.period = 0.033
