@@ -1,17 +1,17 @@
 # Copyright 2016-2022 PeppyMeter peppy.player@gmail.com
-# 
+#
 # This file is part of PeppyMeter.
-# 
+#
 # PeppyMeter is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
-# 
+#
 # PeppyMeter is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public License
 # along with PeppyMeter. If not, see <http://www.gnu.org/licenses/>.
 
@@ -95,11 +95,11 @@ LEFT_Y = "left.y"
 RIGHT_X = "right.x"
 RIGHT_Y = "right.y"
 MONO_X = "mono.x"
-MONO_Y = "mono.y"       
+MONO_Y = "mono.y"
 POSITION_REGULAR = "position.regular"
 POSITION_OVERLOAD = "position.overload"
 STEP_WIDTH_REGULAR = "step.width.regular"
-STEP_WIDTH_OVERLOAD = "step.width.overload"  
+STEP_WIDTH_OVERLOAD = "step.width.overload"
 STEPS_PER_DEGREE = "steps.per.degree"
 START_ANGLE = "start.angle"
 STOP_ANGLE = "stop.angle"
@@ -154,19 +154,20 @@ RIGHT_STOP_ANGLE = "right.stop.angle"
 LEFT_NEEDLE_FLIP = "left.needle.flip"
 RIGHT_NEEDLE_FLIP = "right.needle.flip"
 
+
 class ConfigFileParser(object):
-    """ Configuration file parser """
-    
+    """Configuration file parser"""
+
     def __init__(self, base_path):
-        """ Initializer """  
-              
+        """Initializer"""
+
         self.meter_config = {}
         c = ConfigParser()
-        
-        self.meter_config[BASE_PATH] = base_path 
+
+        self.meter_config[BASE_PATH] = base_path
         peppy_meter_path = os.path.join(base_path, FILE_CONFIG)
         c.read(peppy_meter_path)
-        
+
         self.meter_config[METER] = c.get(CURRENT, METER)
         self.meter_config[RANDOM_METER_INTERVAL] = c.getint(CURRENT, RANDOM_METER_INTERVAL)
         self.meter_config[EXIT_ON_TOUCH] = c.getboolean(CURRENT, EXIT_ON_TOUCH)
@@ -179,20 +180,20 @@ class ConfigFileParser(object):
         self.meter_config[USE_LOGGING] = c.getboolean(CURRENT, USE_LOGGING)
         self.meter_config[USE_CACHE] = c.getboolean(CURRENT, USE_CACHE)
         self.meter_config[FRAME_RATE] = c.getint(CURRENT, FRAME_RATE)
-        
+
         self.meter_config[SERIAL_INTERFACE] = {}
         self.meter_config[SERIAL_INTERFACE][DEVICE_NAME] = c.get(SERIAL_INTERFACE, DEVICE_NAME)
         self.meter_config[SERIAL_INTERFACE][BAUD_RATE] = c.getint(SERIAL_INTERFACE, BAUD_RATE)
         self.meter_config[SERIAL_INTERFACE][INCLUDE_TIME] = c.getboolean(SERIAL_INTERFACE, INCLUDE_TIME)
         self.meter_config[SERIAL_INTERFACE][UPDATE_PERIOD] = c.getfloat(SERIAL_INTERFACE, UPDATE_PERIOD)
-        
+
         self.meter_config[I2C_INTERFACE] = {}
         self.meter_config[I2C_INTERFACE][PORT] = c.getint(I2C_INTERFACE, PORT)
         self.meter_config[I2C_INTERFACE][LEFT_CHANNEL_ADDRESS] = int(c.get(I2C_INTERFACE, LEFT_CHANNEL_ADDRESS), 0)
         self.meter_config[I2C_INTERFACE][RIGHT_CHANNEL_ADDRESS] = int(c.get(I2C_INTERFACE, RIGHT_CHANNEL_ADDRESS), 0)
         self.meter_config[I2C_INTERFACE][OUTPUT_SIZE] = c.getint(I2C_INTERFACE, OUTPUT_SIZE)
         self.meter_config[I2C_INTERFACE][UPDATE_PERIOD] = c.getfloat(I2C_INTERFACE, UPDATE_PERIOD)
-        
+
         self.meter_config[PWM_INTERFACE] = {}
         self.meter_config[PWM_INTERFACE][FREQUENCY] = c.getint(PWM_INTERFACE, FREQUENCY)
         self.meter_config[PWM_INTERFACE][GPIO_PIN_LEFT] = c.getint(PWM_INTERFACE, GPIO_PIN_LEFT)
@@ -210,8 +211,8 @@ class ConfigFileParser(object):
         self.meter_config[SCREEN_INFO] = {}
         self.meter_config[SCREEN_INFO][METER_SIZE] = meter_size
         self.meter_config[SCREEN_INFO][DEPTH] = DEFAULT_DEPTH
-        self.meter_config[SCREEN_INFO][FRAME_RATE] = DEFAULT_FRAME_RATE        
-        
+        self.meter_config[SCREEN_INFO][FRAME_RATE] = DEFAULT_FRAME_RATE
+
         if meter_size == MEDIUM:
             self.meter_config[SCREEN_INFO][WIDTH] = MEDIUM_WIDTH
             self.meter_config[SCREEN_INFO][HEIGHT] = MEDIUM_HEIGHT
@@ -237,7 +238,7 @@ class ConfigFileParser(object):
             pass
 
         self.meter_config[DATA_SOURCE] = self.get_data_source_section(c, DATA_SOURCE)
-        
+
         meter_config_path = os.path.join(base_path, meter_size, FILE_METER_CONFIG)
         if not os.path.exists(meter_config_path):
             print("Cannot read file: " + meter_config_path)
@@ -246,7 +247,7 @@ class ConfigFileParser(object):
         c = ConfigParser()
         c.read(meter_config_path)
         available_meter_names = list()
-        
+
         for section in c.sections():
             available_meter_names.append(section)
             meter_type = c.get(section, METER_TYPE)
@@ -260,10 +261,10 @@ class ConfigFileParser(object):
             available_meter_names = list(map(str.strip, names))
 
         self.meter_config[METER_NAMES] = available_meter_names
-    
+
     def get_data_source_section(self, config_file, section):
-        """ Parser for data source section
-        
+        """Parser for data source section
+
         :param config_file: configuration file
         :param section: section name
         """
@@ -280,10 +281,10 @@ class ConfigFileParser(object):
         d[STEP] = config_file.getint(section, STEP)
         d[SMOOTH_BUFFER_SIZE] = config_file.getint(section, SMOOTH_BUFFER_SIZE)
         return d
-    
+
     def get_linear_section(self, config_file, section, meter_type):
-        """ Parser for linear meter
-        
+        """Parser for linear meter
+
         :param config_file: configuration file
         :param section: section name
         :param meter_type: type of the meter
@@ -307,8 +308,8 @@ class ConfigFileParser(object):
         return d
 
     def get_circular_section(self, config_file, section, meter_type):
-        """ Parser for circular meter
-        
+        """Parser for circular meter
+
         :param config_file: configuration file
         :param section: section name
         :param meter_type: type of the meter
@@ -345,19 +346,19 @@ class ConfigFileParser(object):
         d[METER_X] = config_file.getint(section, METER_X)
         d[METER_Y] = config_file.getint(section, METER_Y)
         d[SCREEN_BGR] = config_file.get(section, SCREEN_BGR)
-        if d[CHANNELS] == 1:                  
+        if d[CHANNELS] == 1:
             d[MONO_ORIGIN_X] = config_file.getint(section, MONO_ORIGIN_X)
-            d[MONO_ORIGIN_Y] = config_file.getint(section, MONO_ORIGIN_Y)            
-        else:            
+            d[MONO_ORIGIN_Y] = config_file.getint(section, MONO_ORIGIN_Y)
+        else:
             d[LEFT_ORIGIN_X] = config_file.getint(section, LEFT_ORIGIN_X)
-            d[LEFT_ORIGIN_Y] = config_file.getint(section, LEFT_ORIGIN_Y)            
+            d[LEFT_ORIGIN_Y] = config_file.getint(section, LEFT_ORIGIN_Y)
             d[RIGHT_ORIGIN_X] = config_file.getint(section, RIGHT_ORIGIN_X)
             d[RIGHT_ORIGIN_Y] = config_file.getint(section, RIGHT_ORIGIN_Y)
         return d
-        
+
     def get_common_options(self, d, config_file, section, meter_type):
-        """ Parser for the common section of the configuration file
-        
+        """Parser for the common section of the configuration file
+
         :param d: common section dictionary
         :param config_file: configuration file
         :param section: section name
@@ -365,7 +366,7 @@ class ConfigFileParser(object):
         """
         d[METER_TYPE] = meter_type
         d[CHANNELS] = config_file.getint(section, CHANNELS)
-        d[UI_REFRESH_PERIOD] = config_file.getfloat(section, UI_REFRESH_PERIOD)                
+        d[UI_REFRESH_PERIOD] = config_file.getfloat(section, UI_REFRESH_PERIOD)
         d[BGR_FILENAME] = config_file.get(section, BGR_FILENAME)
         try:
             d[FGR_FILENAME] = config_file.get(section, FGR_FILENAME)
@@ -374,7 +375,7 @@ class ConfigFileParser(object):
         d[INDICATOR_FILENAME] = config_file.get(section, INDICATOR_FILENAME)
 
     def get_sdl_environment_section(self, config_file, section):
-        """ Parser for SDL library OS environment section
+        """Parser for SDL library OS environment section
 
         :param config_file: configuration file
         :param section: section name
