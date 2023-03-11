@@ -179,8 +179,10 @@ class Meter(Container):
         rects = (self.left_needle_rects, self.right_needle_rects, self.mono_needle_rects)
 
         if self.meter_type == TYPE_LINEAR:
-            y = self.meter_parameters[LEFT_Y] + self.meter_parameters[METER_Y]
-            self.animator = LinearAnimator(self.data_source, self.components, self, self.ui_refresh_period, y)
+            y = self.meter_parameters[LEFT_Y] + self.meter_x
+            self.animator = LinearAnimator(
+                self.data_source, self.components, self, self.ui_refresh_period, y, self.meter_parameters[METER_FALL_SPEED]
+            )
             self.animator.start()
         elif self.meter_type == TYPE_CIRCULAR:
             if self.channels == 2:

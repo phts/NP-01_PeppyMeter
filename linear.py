@@ -20,10 +20,23 @@ import time
 from threading import Thread
 
 
+class ChannelLevel:
+    def __init__(self, fall_speed):
+        self.level = 0.0
+        self.fall_speed = fall_speed
+
+    def tick(self, level):
+        if level > self.level:
+            self.level = level
+        else:
+            self.level = self.level - self.fall_speed
+        return self.level
+
+
 class LinearAnimator(Thread):
     """Provides linear animation in a separate thread"""
 
-    def __init__(self, data_source, components, base, ui_refresh_period, origin_y):
+    def __init__(self, data_source, components, base, ui_refresh_period, origin_y, fall_speed):
         """Initializer
 
         :param data_source: data source
@@ -43,6 +56,8 @@ class LinearAnimator(Thread):
         self.ui_refresh_period = ui_refresh_period
         self.bgr = self.base.bgr
         self.fgr = self.base.fgr
+        self.left_meter = ChannelLevel(fall_speed)
+        self.right_meter = ChannelLevel(fall_speed)
 
     def run(self):
         """Thread method. Converts volume value into the mask width and displays corresponding mask."""
@@ -55,27 +70,24 @@ class LinearAnimator(Thread):
             d = self.data_source.get_current_data()
 
             try:
-                previous_rect_left, previous_volume_left = self.update_channel(d[0], self.components[1], previous_rect_left, previous_volume_left)
-                previous_rect_right, previous_volume_right = self.update_channel(d[1], self.components[2], previous_rect_right, previous_volume_right)
+                left_level = self.left_meter.tick(d[0])
+                right_level = self.right_meter.tick(d[1])
+                previous_rect_left, previous_volume_left = self.update_channel(
+                    left_level, self.components[1], previous_rect_left, previous_volume_left
+                )
+                previous_rect_right, previous_volume_right = self.update_channel(
+                    right_level, self.components[2], previous_rect_right, previous_volume_right
+                )
             except:
                 pass
 
             time.sleep(self.ui_refresh_period)
 
     def stop_thread(self):
-        """Stop thread"""
-
         self.run_flag = False
         time.sleep(self.ui_refresh_period * 2)
 
     def update_channel(self, volume, component, previous_rect, previous_volume):
-        """Update channel
-
-        :volume: new volume value
-        :component: component to update
-        :previous_rect: previous bounding rectangle
-        :previous_volume: previous volume value
-        """
         if previous_volume == volume:
             return (previous_rect, previous_volume)
 

@@ -119,6 +119,7 @@ RANDOM_METER_INTERVAL = "random.meter.interval"
 BASE_PATH = "base.path"
 METER_X = "meter.x"
 METER_Y = "meter.y"
+METER_FALL_SPEED = "meter.fallspeed"
 SCREEN_BGR = "screen.bgr"
 
 FILE_CONFIG = "config.txt"
@@ -299,6 +300,10 @@ class ConfigFileParser(object):
         d[STEP_WIDTH_REGULAR] = config_file.getint(section, STEP_WIDTH_REGULAR)
         d[METER_X] = config_file.getint(section, METER_X)
         d[METER_Y] = config_file.getint(section, METER_Y)
+        try:
+            d[METER_FALL_SPEED] = config_file.getfloat(section, METER_FALL_SPEED)
+        except:
+            d[METER_FALL_SPEED] = 1.0
         d[SCREEN_BGR] = config_file.get(section, SCREEN_BGR)
         try:
             d[POSITION_OVERLOAD] = config_file.getint(section, POSITION_OVERLOAD)
