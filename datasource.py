@@ -288,8 +288,8 @@ class DataSource(object):
             if length == 0:
                 return (0, 0, 0)
 
-            new_left = int(self.max_in_ui * ((data[length - 4] + (data[length - 3] << 8)) / volume_level))
-            new_right = int(self.max_in_ui * ((data[length - 2] + (data[length - 1] << 8)) / volume_level))
+            new_left = int(volume_level * ((data[length - 4] + (data[length - 3] << 8)) / 100))
+            new_right = int(volume_level * ((data[length - 2] + (data[length - 1] << 8)) / 100))
             new_mono = self.get_mono(new_left, new_right)
 
             left = self.get_channel(self.previous_left, new_left)
