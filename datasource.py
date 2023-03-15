@@ -52,7 +52,7 @@ class DataSource(object):
 
         :param c: configuration dictionary
         """
-        self.volume = 1
+        self.volume = 75
         self.config = util[DATA_SOURCE]
         self.mono_algorithm = self.config[MONO_ALGORITHM]
         self.stereo_algorithm = self.config[STEREO_ALGORITHM]
@@ -137,6 +137,9 @@ class DataSource(object):
         """Stop data source thread."""
 
         self.run_flag = False
+
+    def set_volume(self, value):
+        self.volume = value
 
     def get_current_data(self):
         """Return current data"""
@@ -275,9 +278,6 @@ class DataSource(object):
 
         data = None
         left = right = mono = 0.0
-        volume_level = self.volume
-        if volume_level == 0:
-            volume_level = 1
 
         if self.pipe == None:
             return (left, right, mono)
@@ -288,8 +288,8 @@ class DataSource(object):
             if length == 0:
                 return (0, 0, 0)
 
-            new_left = int(self.max_in_ui * ((data[length - 4] + (data[length - 3] << 8)) / self.max_in_pipe))
-            new_right = int(self.max_in_ui * ((data[length - 2] + (data[length - 1] << 8)) / self.max_in_pipe))
+            new_left = int(self.volume * ((data[length - 4] + (data[length - 3] << 8)) / self.max_in_pipe))
+            new_right = int(self.volume * ((data[length - 2] + (data[length - 1] << 8)) / self.max_in_pipe))
             new_mono = self.get_mono(new_left, new_right)
 
             left = self.get_channel(self.previous_left, new_left)

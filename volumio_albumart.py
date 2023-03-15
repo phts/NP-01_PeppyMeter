@@ -63,7 +63,7 @@ from volumio_configfileparser import (
 class AlbumartAnimator(Thread):
     """Provides show albumart in a separate thread"""
 
-    def __init__(self, util, meter_config_volumio, base):
+    def __init__(self, util, meter_config_volumio, base, pm):
         """Initializer
 
         :param util: utility class
@@ -77,12 +77,14 @@ class AlbumartAnimator(Thread):
         self.meter_config = util.meter_config
         self.meter_config_volumio = meter_config_volumio
         self.meter_section = meter_config_volumio[self.meter_config[METER]]
+        self.pm = pm
 
     def run(self):
         """Thread method. show all title infos and albumart."""
         try:
 
             def on_push_state(*args):
+                self.pm.set_volume(args[0]["volume"])
                 if args[0]["status"] == "play":
                     if self.meter_section[EXTENDED_CONF] == True:
                         # draw albumart

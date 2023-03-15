@@ -18,7 +18,7 @@ from volumio_configfileparser import Volumio_ConfigFileParser
 class CallBack:
     """Implements CallBack functions to start and stop albumart animator"""
 
-    def __init__(self, util, meter, meter_config):
+    def __init__(self, util, meter, meter_config, pm):
         """Initializer
 
         :param util: peppymeter utility class
@@ -27,11 +27,12 @@ class CallBack:
         self.meter = meter
         self.util = util
         self.meter_config = meter_config
+        self.pm = pm
 
     def peppy_meter_start(self, meter):
         # start albumart animator
         self.album_animator = None
-        self.album_animator = AlbumartAnimator(self.util, self.meter_config, meter)
+        self.album_animator = AlbumartAnimator(self.util, self.meter_config, meter, self.pm)
         self.album_animator.start()
         # print (self.get_memory() / 1024)
 
@@ -102,7 +103,7 @@ if __name__ == "__main__":
     meter_config_volumio = parser.meter_config_volumio
 
     # define the callback functions
-    callback = CallBack(pm.util, pm.meter, meter_config_volumio)
+    callback = CallBack(pm.util, pm.meter, meter_config_volumio, pm)
     pm.meter.callback_start = callback.peppy_meter_start
     pm.meter.callback_stop = callback.peppy_meter_stop
     pm.meter.malloc_trim = callback.trim_memory

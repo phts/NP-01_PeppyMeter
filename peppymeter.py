@@ -245,7 +245,7 @@ class Peppymeter(ScreensaverMeter):
 
         :param volume: new volume level
         """
-        self.data_source.volume = volume
+        self.data_source.set_volume(volume)
 
     def exit(self):
         """Exit program"""
