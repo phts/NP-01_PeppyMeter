@@ -2,13 +2,14 @@
 
 This is a modification of original [PeppyMeter] which is used by [PHTS NP-01].
 
-Main changes:
+Noticeable changes:
 
-- Add missing files into the repo which are being copied into plugin directory during plugin installation
-- Do not render red counter when 10 seconds remaining
-- Render time as `--:--` for webradio
 - Add time type "counter"
-- [...and more](https://github.com/phts/NP-01_vu-meter/commits/master)
+- New meters (like on [Radiotehnika HiFi components][radiotehnika])
+- More realistic linear meter dynamics [[48a5ef7](https://github.com/phts/NP-01_vu-meter/commit/48a5ef7875ec6d82e621b7e395d40f120651bfad)]
+- Meter level dependent on volume level [[1a2abf7](https://github.com/phts/NP-01_vu-meter/commit/1a2abf753892155df5927c272a4b67a4d5c7c28d)]
+- Render bitrate, year, track number
+- [...and more][commits]
 
 ---
 
@@ -17,71 +18,78 @@ Main changes:
 
 ## Signac Edition 2022.10.16
 
-* Refactored the algorithms for circular and linear meters
-* The changes allow to create vertical linear and  circular meters
-* The circular meter range can be more than 180 degrees now
-* Fixed rendering issues for several default meters
+- Refactored the algorithms for circular and linear meters
+- The changes allow to create vertical linear and circular meters
+- The circular meter range can be more than 180 degrees now
+- Fixed rendering issues for several default meters
 
 ## Renoir Edition 2021.07.17
 
-* PeppyMeter can send HTTP requests with volume data to remote web servers
-* PeppyMeter can receive HTTP requests and display volume data from those requests
-* Added cache for needle sprites. It makes transition from one meter to another much faster. It also fixed the Pygame/SDL memory leak
-* Implemented ability to embed PeppyMeter to larger screens
-* New configuration parameter enables exit on touch event
+- PeppyMeter can send HTTP requests with volume data to remote web servers
+- PeppyMeter can receive HTTP requests and display volume data from those requests
+- Added cache for needle sprites. It makes transition from one meter to another much faster. It also fixed the Pygame/SDL memory leak
+- Implemented ability to embed PeppyMeter to larger screens
+- New configuration parameter enables exit on touch event
 
 ## Hiroshige Edition 2021.04.18
 
-* Now the meters to display can be defined as a comma separated names
-* It's possible to enable/disable Double Buffering in the configuration file
+- Now the meters to display can be defined as a comma separated names
+- It's possible to enable/disable Double Buffering in the configuration file
 
 ## Hokusai Edition 2020.11.15
 
-* Added 8 new meters to the large, medium and small groups.
-* Added new group 'wide' with resolution 1280x400px. The group has 8 new meters.
+- Added 8 new meters to the large, medium and small groups.
+- Added new group 'wide' with resolution 1280x400px. The group has 8 new meters.
 
 ## Constable Edition 2020.08.08
 
-* Refactored the named pipe data source functionality. The meters became responsive
-* Eliminated the startup delays
-* Introduced the smooth buffer which helped to make all indicator animations smooth.
-* Improved the meters' performance. Now the meters add about 7% to the CPU usage
-* Added file logging
+- Refactored the named pipe data source functionality. The meters became responsive
+- Eliminated the startup delays
+- Introduced the smooth buffer which helped to make all indicator animations smooth.
+- Improved the meters' performance. Now the meters add about 7% to the CPU usage
+- Added file logging
 
 ## Hogarth Edition 2020.04.27
 
-* Fixed the issues with the testing data sources (sine, saw etc)
+- Fixed the issues with the testing data sources (sine, saw etc)
 
 ## Durer Edition 2018.01.26
 
 New features:
-* Fixed 'Display' output. If disabled it will be possible to output signal to a hardware only. No UI will be displaied in this case.
-* Added 'PWM' output. It will allow to use LEDs and gas tubes as a hardware VU Meters.
+
+- Fixed 'Display' output. If disabled it will be possible to output signal to a hardware only. No UI will be displaied in this case.
+- Added 'PWM' output. It will allow to use LEDs and gas tubes as a hardware VU Meters.
 
 ## El Greco Edition 2018.11.12
 
 New features:
-* Added new native resolution 800x480px
+
+- Added new native resolution 800x480px
 
 ## Goya Edition 2018.10.14
 
 New features:
-* Modified named pipe data source to leverage peppyalsa ALSA plugin instead of file ALSA plugin
+
+- Modified named pipe data source to leverage peppyalsa ALSA plugin instead of file ALSA plugin
 
 ## Vermeer Edition 2018.05.28
 
 New features:
-* Added new native resolution 320x240px
-* Redesigned volume data extraction from named pipe
-* Handling of data input from different audio players through ALSA file plugin
-* Implemented support for output to Serial Interafce and I2C interface
+
+- Added new native resolution 320x240px
+- Redesigned volume data extraction from named pipe
+- Handling of data input from different audio players through ALSA file plugin
+- Implemented support for output to Serial Interafce and I2C interface
 
 ## Michelangelo Edition 2016.09.05
 
 PeppyMeter is a software VU Meter written in Python. It was originally developped as the new 'VU Meter' screensaver for [Peppy Player](https://github.com/project-owner/Peppy.doc/wiki). With minor modifications it became a stand-alone application.
 PeppyMeter gets audio data from media players (e.g. mpd) via fifo and displays current volume level in a Graphical User Interface
- in a form of traditional VU Meter.
+in a form of traditional VU Meter.
+
 </details>
 
-[PeppyMeter]: https://github.com/project-owner/PeppyMeter
-[PHTS NP-01]: https://tsaryk.com/NP-01
+[peppymeter]: https://github.com/project-owner/PeppyMeter
+[phts np-01]: https://tsaryk.com/NP-01
+[commits]: https://github.com/phts/NP-01_vu-meter/commits/master
+[radiotehnika]: https://ldsound.info/wp-content/uploads/2019/11/radiotehnika-mp7301s-ldsound.ru-3.jpg
