@@ -5,6 +5,7 @@ meter.size = custom_PHTS NP-01
 screen.width = 800
 screen.height = 480
 exit.on.touch = True
+exit.timeout = 5000
 stop.display.on.touch = False
 output.display = True
 output.serial = False

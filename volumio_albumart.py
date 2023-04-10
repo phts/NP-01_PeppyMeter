@@ -22,7 +22,7 @@ from socketIO_client import SocketIO
 from threading import Thread, Timer
 from configparser import ConfigParser
 
-from configfileparser import METER
+from configfileparser import METER, EXIT_TIMEOUT
 from volumio_configfileparser import (
     ALBUMART_POS,
     ALBUMART_DIM,
@@ -86,7 +86,8 @@ class AlbumartAnimator(Thread):
 
             def on_push_state(*args):
                 self.pm.set_volume(args[0]["volume"])
-                if args[0]["status"] == "play":
+                status = args[0]["status"]
+                if status == "play":
                     if self.meter_section[EXTENDED_CONF] == True:
                         # draw albumart
                         if args[0]["albumart"] != self.albumart_mem:
@@ -115,14 +116,17 @@ class AlbumartAnimator(Thread):
                         self.first_run = False
                     self.status_mem = "play"
 
-                elif args[0]["status"] == "pause" and self.status_mem == "play":
-                    self.status_mem = "pause"
-                    pg.event.post(pg.event.Event(pg.MOUSEBUTTONUP))
+                elif (status == "pause" or status == "stop") and self.status_mem == "play":
+                    self.status_mem = status
 
-                elif args[0]["status"] == "stop" and self.status_mem == "play":
-                    # stop pressed for webradio / end of playlist
-                    self.status_mem = "stop"
-                    pg.event.post(pg.event.Event(pg.MOUSEBUTTONUP))
+                    def exit_vu():
+                        pg.event.post(pg.event.Event(pg.MOUSEBUTTONUP))
+
+                    if self.meter_config[EXIT_TIMEOUT] == 0:
+                        exit_vu()
+                    else:
+                        timer.cancel()
+                        Timer(self.meter_config[EXIT_TIMEOUT] / 1000, exit_vu).start()
 
                 else:
                     self.status_mem = "other"

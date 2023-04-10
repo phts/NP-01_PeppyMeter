@@ -30,6 +30,7 @@ SCREEN_WIDTH = "screen.width"
 SCREEN_HEIGHT = "screen.height"
 SCREEN_RECT = "screen.rect"
 EXIT_ON_TOUCH = "exit.on.touch"
+EXIT_TIMEOUT = "exit.timeout"
 STOP_DISPLAY_ON_TOUCH = "stop.display.on.touch"
 OUTPUT_DISPLAY = "output.display"
 OUTPUT_SERIAL = "output.serial"
@@ -172,6 +173,10 @@ class ConfigFileParser(object):
         self.meter_config[METER] = c.get(CURRENT, METER)
         self.meter_config[RANDOM_METER_INTERVAL] = c.getint(CURRENT, RANDOM_METER_INTERVAL)
         self.meter_config[EXIT_ON_TOUCH] = c.getboolean(CURRENT, EXIT_ON_TOUCH)
+        try:
+            self.meter_config[EXIT_TIMEOUT] = c.getint(CURRENT, EXIT_TIMEOUT)
+        except:
+            self.meter_config[EXIT_TIMEOUT] = 0
         self.meter_config[STOP_DISPLAY_ON_TOUCH] = c.getboolean(CURRENT, STOP_DISPLAY_ON_TOUCH)
         self.meter_config[OUTPUT_DISPLAY] = c.getboolean(CURRENT, OUTPUT_DISPLAY)
         self.meter_config[OUTPUT_SERIAL] = c.getboolean(CURRENT, OUTPUT_SERIAL)
