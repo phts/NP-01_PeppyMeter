@@ -259,8 +259,8 @@ class ImageTitleFactory:
         if hasattr(self, "playinfo_title"):
             self.titleMem = self.playinfo_title
         self.playinfo_title = play_info["title"] if play_info["title"] is not None else ""
-        self.playinfo_artist = play_info["artist"] if play_info["artist"] is not None else ""
-        self.playinfo_album = play_info["album"] if play_info["album"] is not None else ""
+        self.playinfo_artist = play_info["artist"] if "artist" in play_info and play_info["artist"] is not None else ""
+        self.playinfo_album = play_info["album"] if "album" in play_info and play_info["album"] is not None else ""
         self.playinfo_trackT = play_info["trackType"] if play_info["trackType"] is not None else ""
         self.playinfo_sample = str(play_info["samplerate"]) if "samplerate" in play_info and play_info["samplerate"] is not None else ""
         self.playinfo_depth = play_info["bitdepth"] if "bitdepth" in play_info and play_info["bitdepth"] is not None else ""
