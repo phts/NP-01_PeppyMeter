@@ -266,7 +266,10 @@ class ImageTitleFactory:
         self.playinfo_depth = play_info["bitdepth"] if "bitdepth" in play_info and play_info["bitdepth"] is not None else ""
         self.playinfo_pos = (
             str(play_info["position"] + 1).rjust(2, "0") + " - "
-            if self.playinfo_trackT != "webradio" and "position" in play_info and play_info["position"] is not None
+            if self.playinfo_trackT != "webradio"
+            and self.playinfo_trackT != "Podcast"
+            and "position" in play_info
+            and play_info["position"] is not None
             else ""
         )
         self.playinfo_tracknumber = "tracknumber" in play_info and play_info["tracknumber"] is not None
