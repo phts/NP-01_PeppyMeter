@@ -10,6 +10,7 @@ import requests
 import io
 import ctypes
 import logging
+import traceback
 
 try:
     import cairosvg
@@ -172,7 +173,7 @@ class AlbumartAnimator(Thread):
 
             cleanup_memory()
         except Exception as e:
-            logging.error(e)
+            logging.error(traceback.format_exc())
             cleanup_memory()
 
     def cleanup_memory(self):
