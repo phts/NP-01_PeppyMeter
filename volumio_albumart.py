@@ -279,8 +279,9 @@ class ImageTitleFactory:
         self.playinfo_tracknumber = "tracknumber" in play_info and play_info["tracknumber"] is not None
         self.playinfo_bitrate = play_info["bitrate"] if "bitrate" in play_info and play_info["bitrate"] is not None else ""
         self.playinfo_year = play_info["year"] if "year" in play_info and play_info["year"] is not None else ""
-        duration = play_info["duration"] if "duration" in play_info else None
-        self.playinfo_duration = "%02d:%02d" % (duration / 60, duration % 60) if duration is not None else ""
+        duration_sec = play_info["duration"] if "duration" in play_info else None
+        duration_time = "%02d:%02d" % (duration_sec / 60, duration_sec % 60) if duration_sec is not None else ""
+        self.playinfo_duration = (duration_time + "/" + str(duration_sec)) if duration_sec is not None else ""
         if not self.meter_section[PLAY_ALBUM_POS] and self.playinfo_album != "":
             self.playinfo_artist = self.playinfo_artist + " - " + self.playinfo_album
         if self.playinfo_trackT == "dsf":
@@ -394,7 +395,7 @@ class ImageTitleFactory:
         # duration + bitrate + samplerate + bitdepth
         text_values = [self.playinfo_duration, self.playinfo_bitrate, self.playinfo_sample, self.playinfo_depth]
         text = ", ".join(filter(None, text_values)).strip()
-        maxText = "==88:88, 888 Kbps, 88.8 kHz, 88 bit=="
+        maxText = "==88:88/888, 88888 Kbps, 88.8 kHz, 88 bit=="
         if self.meter_section[PLAY_SAMPLE_STYLE] == FONT_STYLE_R:
             img_samplerate = self.fontR.render(text, True, self.meter_section[PLAY_TYPE_COLOR])
             max_text_size = self.fontR.size(maxText)
