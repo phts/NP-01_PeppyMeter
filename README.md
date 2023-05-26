@@ -11,6 +11,8 @@ Noticeable changes:
 - Render bitrate, year, track number
 - [...and more][commits]
 
+<img src="./docs/demo.jpg" width="300">
+
 ---
 
 <details>
