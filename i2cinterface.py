@@ -1,4 +1,4 @@
-# Copyright 2016-2018 PeppyMeter peppy.player@gmail.com
+# Copyright 2016-2023 PeppyMeter peppy.player@gmail.com
 # 
 # This file is part of PeppyMeter.
 # 
@@ -100,14 +100,17 @@ class I2CInterface(object):
         """ Method of the writing thread """
         
         while self.running:
-            v = self.data_source.get_value()
-            left = self.get_bits(v[0])
-            right = self.get_bits(v[1])
-            
-            logging.debug(self.logging_template.format(left, right))
+            v = self.data_source.get_current_data()
 
-            self.i2c_interface.write_word_data(self.left_channel_address, 0x12, left)
-            self.i2c_interface.write_word_data(self.right_channel_address, 0x12, right)
+            if v:
+                left = self.get_bits(v[0])
+                right = self.get_bits(v[1])
+
+                logging.debug(self.logging_template.format(left, right))
+
+                self.i2c_interface.write_word_data(self.left_channel_address, 0x12, left)
+                self.i2c_interface.write_word_data(self.right_channel_address, 0x12, right)
+
             time.sleep(self.update_period)
     
     def stop_writing(self):

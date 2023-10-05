@@ -1,4 +1,4 @@
-# Copyright 2016-2022 PeppyMeter peppy.player@gmail.com
+# Copyright 2016-2023 PeppyMeter peppy.player@gmail.com
 #
 # This file is part of PeppyMeter.
 #
@@ -16,8 +16,10 @@
 # along with PeppyMeter. If not, see <http://www.gnu.org/licenses/>.
 
 import time
+import pygame
 
 from threading import Thread
+from configfileparser import DIRECTION_LEFT_RIGHT, DIRECTION_BOTTOM_TOP, DIRECTION_TOP_BOTTOM, DIRECTION_EDGES_CENTER, DIRECTION_CENTER_EDGES, SINGLE
 
 
 class ChannelLevel:
@@ -36,20 +38,25 @@ class ChannelLevel:
 class LinearAnimator(Thread):
     """Provides linear animation in a separate thread"""
 
-    def __init__(self, data_source, components, base, ui_refresh_period, origin_y, fall_speed):
+    def __init__(
+        self, data_source, components, base, ui_refresh_period, fall_speed, direction, indicator_type=None, flip_left_x=None, flip_right_x=None
+    ):
         """Initializer
 
         :param data_source: data source
         :param components: UI component
         :param base: meter base
         :param ui_refresh_period: animation interval
-                :param origin_y: origin Y
+        :param fall_speed: indicator fall speed
+        :param direction: indicator moving direction
+        :param indicator_type: indicator type e.g. 'single'
+        :param flip_left_x: flip left channel image horizontally
+        :param flip_right_x: flip right channel image horizontally
         """
         Thread.__init__(self)
         self.index = 0
         self.data_source = data_source
         self.components = components
-        self.origin_y = origin_y
         self.comp_width, self.comp_height = components[1].content[1].get_size()
         self.run_flag = True
         self.base = base
@@ -58,6 +65,20 @@ class LinearAnimator(Thread):
         self.fgr = self.base.fgr
         self.left_meter = ChannelLevel(fall_speed)
         self.right_meter = ChannelLevel(fall_speed)
+        self.indicator_type = indicator_type
+        self.indicator_width = self.components[1].content[1].get_size()[0]
+        self.indicator_height = self.components[1].content[1].get_size()[1]
+        self.direction = direction
+
+        if direction == None:
+            self.direction = DIRECTION_LEFT_RIGHT
+
+        if flip_right_x:
+            self.right_origin_x = self.components[2].content_x
+            self.components[2].content = (self.components[2].content[0], pygame.transform.flip(self.components[2].content[1], True, False))
+
+        if flip_left_x:
+            self.components[1].content = (self.components[1].content[0], pygame.transform.flip(self.components[1].content[1], True, False))
 
     def run(self):
         """Thread method. Converts volume value into the mask width and displays corresponding mask."""
@@ -73,10 +94,10 @@ class LinearAnimator(Thread):
                 left_level = self.left_meter.tick(d[0])
                 right_level = self.right_meter.tick(d[1])
                 previous_rect_left, previous_volume_left = self.update_channel(
-                    left_level, self.components[1], previous_rect_left, previous_volume_left
+                    left_level, self.components[1], previous_rect_left, previous_volume_left, True
                 )
                 previous_rect_right, previous_volume_right = self.update_channel(
-                    right_level, self.components[2], previous_rect_right, previous_volume_right
+                    right_level, self.components[2], previous_rect_right, previous_volume_right, False
                 )
             except:
                 pass
@@ -87,8 +108,16 @@ class LinearAnimator(Thread):
         self.run_flag = False
         time.sleep(self.ui_refresh_period * 2)
 
-    def update_channel(self, volume, component, previous_rect, previous_volume):
-        if previous_volume == volume:
+    def update_channel(self, volume, component, previous_rect, previous_volume, left=True):
+        """Update channel
+
+        :volume: new volume value
+        :component: component to update
+        :previous_rect: previous bounding rectangle
+        :previous_volume: previous volume value
+        :left: True - left channel, False - right channel
+        """
+        if previous_volume == volume and self.indicator_type != SINGLE:
             return (previous_rect, previous_volume)
 
         self.base.draw_bgr_fgr(previous_rect, self.base.bgr)
@@ -99,16 +128,57 @@ class LinearAnimator(Thread):
         w = self.base.masks[n]
         if w == 0:
             w = 1
+        component.bounding_box.x = 0
+        component.bounding_box.y = 0
+        component.bounding_box.w = self.indicator_width
+        component.bounding_box.h = self.indicator_height
 
-        if self.comp_width > self.comp_height:
-            component.bounding_box.w = w
-            component.bounding_box.x = 0
-            component.bounding_box.y = 0
+        if self.indicator_type == SINGLE:
+            component.content_y = component.origin_y
+
+            if self.direction == DIRECTION_BOTTOM_TOP:
+                component.content_x = component.origin_x
+                component.content_y = component.origin_y - w
+            elif self.direction == DIRECTION_TOP_BOTTOM:
+                component.content_x = component.origin_x
+                component.content_y = component.origin_y + w
+            elif self.direction == DIRECTION_CENTER_EDGES:
+                if left:
+                    component.content_x = component.origin_x - w
+                else:
+                    component.content_x = component.origin_x + w
+            elif self.direction == DIRECTION_EDGES_CENTER:
+                if left:
+                    component.content_x = component.origin_x + w
+                else:
+                    component.content_x = component.origin_x - w
+            elif self.direction == DIRECTION_LEFT_RIGHT:
+                component.content_x = component.origin_x + w
         else:
-            component.bounding_box.h = w
-            component.bounding_box.x = 0
-            component.bounding_box.y = self.comp_height - w
-            component.content_y = self.origin_y + self.comp_height - w
+            if self.direction == DIRECTION_LEFT_RIGHT:
+                component.bounding_box.w = w
+            elif self.direction == DIRECTION_BOTTOM_TOP:
+                component.bounding_box.h = w
+                component.bounding_box.y = self.comp_height - w
+                component.content_y = component.origin_y + self.comp_height - w
+            elif self.direction == DIRECTION_TOP_BOTTOM:
+                component.bounding_box.h = w
+                component.content_y = component.origin_y
+            elif self.direction == DIRECTION_EDGES_CENTER:
+                if left:
+                    component.bounding_box.w = w
+                else:
+                    component.bounding_box.w = w
+                    component.bounding_box.x = self.comp_width - w
+                    if hasattr(self, "right_origin_x"):
+                        component.content_x = self.right_origin_x - w
+            elif self.direction == DIRECTION_CENTER_EDGES:
+                if left:
+                    component.bounding_box.w = w
+                    component.bounding_box.x = self.comp_width - w
+                    component.content_x = component.origin_x - w
+                else:
+                    component.bounding_box.w = w
 
         component.draw()
 

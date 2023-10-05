@@ -1,4 +1,4 @@
-# Copyright 2016-2021 PeppyMeter peppy.player@gmail.com
+# Copyright 2016-2023 PeppyMeter peppy.player@gmail.com
 #
 # This file is part of PeppyMeter.
 #
@@ -81,7 +81,7 @@ class Peppymeter(ScreensaverMeter):
             self.util.meter_config[DATA_SOURCE][TYPE] = SOURCE_NOISE
 
         self.data_source = DataSource(self.util.meter_config)
-        if self.util.meter_config[DATA_SOURCE][TYPE] == SOURCE_PIPE or self.use_vu_meter == True:
+        if self.util.meter_config[DATA_SOURCE][TYPE] or self.use_vu_meter == True:
             self.data_source.start_data_source()
 
         if self.util.meter_config[OUTPUT_DISPLAY]:
@@ -166,23 +166,9 @@ class Peppymeter(ScreensaverMeter):
         self.util.meter_config[SCREEN_RECT] = pygame.Rect(0, 0, screen_w, screen_h)
 
     def start_interface_outputs(self):
-        """Starts writing interfaces"""
-
-        if self.util.meter_config[OUTPUT_SERIAL]:
-            self.serial_interface = self.outputs[OUTPUT_SERIAL]
-            self.serial_interface.start_writing()
-
-        if self.util.meter_config[OUTPUT_I2C]:
-            self.i2c_interface = self.outputs[OUTPUT_I2C]
-            self.i2c_interface.start_writing()
-
-        if self.util.meter_config[OUTPUT_PWM]:
-            self.pwm_interface = self.outputs[OUTPUT_PWM]
-            self.pwm_interface.start_writing()
-
-        if self.util.meter_config[OUTPUT_HTTP]:
-            self.http_interface = self.outputs[OUTPUT_HTTP]
-            self.http_interface.start_writing()
+        """Starts writing to interfaces"""
+        for v in self.outputs.values():
+            v.start_writing()
 
     def start(self):
         """Start VU meter. This method called by Peppy Meter to start meter"""
@@ -192,9 +178,8 @@ class Peppymeter(ScreensaverMeter):
             self.data_source.start_data_source()
         self.meter.start()
 
-        if self.util.meter_config[OUTPUT_HTTP]:
-            self.http_interface = self.outputs[OUTPUT_HTTP]
-            self.http_interface.start_writing()
+        for v in self.outputs.values():
+            v.start_writing()
 
     def start_display_output(self):
         """Start thread for graphical VU meter"""
@@ -227,13 +212,11 @@ class Peppymeter(ScreensaverMeter):
     def stop(self):
         """Stop meter animation."""
 
-        if not (self.util.meter_config[DATA_SOURCE][TYPE] == SOURCE_PIPE and self.use_vu_meter == True):
+        if not self.use_vu_meter:
+            for v in self.outputs.values():
+                v.stop_writing()
             self.data_source.stop_data_source()
         self.meter.stop()
-
-        if self.util.meter_config[OUTPUT_HTTP]:
-            self.http_interface = self.outputs[OUTPUT_HTTP]
-            self.http_interface.stop_writing()
 
     def refresh(self):
         """Refresh meter. Used to switch from one random meter to another."""
@@ -250,14 +233,8 @@ class Peppymeter(ScreensaverMeter):
     def exit(self):
         """Exit program"""
 
-        if self.util.meter_config[OUTPUT_SERIAL]:
-            self.serial_interface.stop_writing()
-        if self.util.meter_config[OUTPUT_I2C]:
-            self.i2c_interface.stop_writing()
-        if self.util.meter_config[OUTPUT_PWM]:
-            self.pwm_interface.stop_writing()
-        if self.util.meter_config[OUTPUT_HTTP]:
-            self.http_interface.stop_writing()
+        for v in self.outputs.values():
+            v.stop_writing()
         pygame.quit()
 
         if hasattr(self, "malloc_trim"):
