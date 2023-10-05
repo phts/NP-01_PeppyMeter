@@ -57,7 +57,6 @@ class LinearAnimator(Thread):
         self.index = 0
         self.data_source = data_source
         self.components = components
-        self.comp_width, self.comp_height = components[1].content[1].get_size()
         self.run_flag = True
         self.base = base
         self.ui_refresh_period = ui_refresh_period
@@ -66,8 +65,7 @@ class LinearAnimator(Thread):
         self.left_meter = ChannelLevel(fall_speed)
         self.right_meter = ChannelLevel(fall_speed)
         self.indicator_type = indicator_type
-        self.indicator_width = self.components[1].content[1].get_size()[0]
-        self.indicator_height = self.components[1].content[1].get_size()[1]
+        self.indicator_width, self.indicator_height = components[1].content[1].get_size()
         self.direction = direction
 
         if direction == None:
@@ -159,8 +157,8 @@ class LinearAnimator(Thread):
                 component.bounding_box.w = w
             elif self.direction == DIRECTION_BOTTOM_TOP:
                 component.bounding_box.h = w
-                component.bounding_box.y = self.comp_height - w
-                component.content_y = component.origin_y + self.comp_height - w
+                component.bounding_box.y = self.indicator_height - w
+                component.content_y = component.origin_y + self.indicator_height - w
             elif self.direction == DIRECTION_TOP_BOTTOM:
                 component.bounding_box.h = w
                 component.content_y = component.origin_y
@@ -169,13 +167,13 @@ class LinearAnimator(Thread):
                     component.bounding_box.w = w
                 else:
                     component.bounding_box.w = w
-                    component.bounding_box.x = self.comp_width - w
+                    component.bounding_box.x = self.indicator_width - w
                     if hasattr(self, "right_origin_x"):
                         component.content_x = self.right_origin_x - w
             elif self.direction == DIRECTION_CENTER_EDGES:
                 if left:
                     component.bounding_box.w = w
-                    component.bounding_box.x = self.comp_width - w
+                    component.bounding_box.x = self.indicator_width - w
                     component.content_x = component.origin_x - w
                 else:
                     component.bounding_box.w = w
