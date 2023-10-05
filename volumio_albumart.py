@@ -79,6 +79,7 @@ class AlbumartAnimator(Thread):
         self.meter_config_volumio = meter_config_volumio
         self.meter_section = meter_config_volumio[self.meter_config[METER]]
         self.pm = pm
+        self.exit_timer = None
 
     def run(self):
         """Thread method. show all title infos and albumart."""
@@ -88,6 +89,9 @@ class AlbumartAnimator(Thread):
                 self.pm.set_volume(args[0]["volume"])
                 status = args[0]["status"]
                 if status == "play":
+                    if self.exit_timer is not None:
+                        self.exit_timer.cancel()
+                        self.exit_timer = None
                     if self.meter_section[EXTENDED_CONF] == True:
                         # draw albumart
                         if args[0]["albumart"] != self.albumart_mem:
@@ -126,7 +130,8 @@ class AlbumartAnimator(Thread):
                         exit_vu()
                     else:
                         timer.cancel()
-                        Timer(self.meter_config[EXIT_TIMEOUT] / 1000, exit_vu).start()
+                        self.exit_timer = Timer(self.meter_config[EXIT_TIMEOUT] / 1000, exit_vu)
+                        self.exit_timer.start()
 
                 else:
                     self.status_mem = "other"
