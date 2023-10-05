@@ -8,3 +8,10 @@ ssh volumio <<EOF
   git fetch
   git checkout ${CURRENT_COMMIT}
 EOF
+
+for arg in "$@"; do
+  if [ "$arg" == "--restart" ]; then
+    ssh volumio 'sudo systemctl restart volumio'
+    echo "Restarting..."
+  fi
+done
