@@ -52,7 +52,6 @@ class DataSource(object):
 
         :param c: configuration dictionary
         """
-        self.volume = 75
         self.config = util[DATA_SOURCE]
         self.mono_algorithm = self.config[MONO_ALGORITHM]
         self.stereo_algorithm = self.config[STEREO_ALGORITHM]
@@ -62,6 +61,10 @@ class DataSource(object):
         self.min = self.config[VOLUME_MIN]
         self.max_in_ui = self.config[VOLUME_MAX]
         self.max_in_pipe = self.config[VOLUME_MAX_IN_PIPE]
+        self.use_real_volume = self.config[VOLUME_MAX_USE_REAL]
+        self.volume = 75
+        if not self.use_real_volume:
+            self.volume = self.max_in_ui
 
         self.v = 0
         self.step = self.config[STEP]
@@ -139,6 +142,8 @@ class DataSource(object):
         self.run_flag = False
 
     def set_volume(self, value):
+        if not self.use_real_volume:
+            return
         self.volume = value
 
     def get_current_data(self):

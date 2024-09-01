@@ -7,7 +7,7 @@ Noticeable changes:
 - Add time type "counter"
 - New meters (like on [Radiotehnika HiFi components][radiotehnika])
 - More realistic linear meter dynamics [[48a5ef7](https://github.com/phts/NP-01_vu-meter/commit/48a5ef7875ec6d82e621b7e395d40f120651bfad)]
-- Meter level dependent on volume level [[1a2abf7](https://github.com/phts/NP-01_vu-meter/commit/1a2abf753892155df5927c272a4b67a4d5c7c28d)]
+- Option `volume.max.use.real` to use real software volume level as max meter level
 - Render bitrate, year, track number
 - [...and more][commits]
 

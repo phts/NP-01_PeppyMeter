@@ -83,6 +83,7 @@ PIPE_NAME = "pipe.name"
 VOLUME_CONSTANT = "volume.constant"
 VOLUME_MIN = "volume.min"
 VOLUME_MAX = "volume.max"
+VOLUME_MAX_USE_REAL = "volume.max.use.real"
 VOLUME_MAX_IN_PIPE = "volume.max.in.pipe"
 STEP = "step"
 MONO_ALGORITHM = "mono.algorithm"
@@ -300,6 +301,7 @@ class ConfigFileParser(object):
         d[VOLUME_CONSTANT] = config_file.getfloat(section, VOLUME_CONSTANT)
         d[VOLUME_MIN] = config_file.getfloat(section, VOLUME_MIN)
         d[VOLUME_MAX] = config_file.getfloat(section, VOLUME_MAX)
+        d[VOLUME_MAX_USE_REAL] = config_file.getboolean(section, VOLUME_MAX_USE_REAL)
         d[VOLUME_MAX_IN_PIPE] = config_file.getfloat(section, VOLUME_MAX_IN_PIPE)
         d[MONO_ALGORITHM] = config_file.get(section, MONO_ALGORITHM)
         d[STEREO_ALGORITHM] = config_file.get(section, STEREO_ALGORITHM)
