@@ -2,7 +2,7 @@
 meter = Radiotehnika МП-7201 (counter/album art - bottom)
 random.meter.interval = 60
 base.folder =
-meter.folder = custom_PHTS NP-01
+meter.folder = 800x480-PHTS NP-01
 screen.width = 800
 screen.height = 480
 exit.on.touch = True
