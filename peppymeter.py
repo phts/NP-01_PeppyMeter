@@ -33,10 +33,10 @@ from configfileparser import *
 
 
 class Peppymeter(ScreensaverMeter):
-    """Peppy Meter class"""
+    """ Peppy Meter class """
 
-    def __init__(self, util=None, standalone=False):
-        """Initializer
+    def __init__(self, util=None, standalone=False, timer_controlled_random_meter=True, quit_pygame_on_stop=True):
+        """ Initializer
 
         :param util: utility object
         :param standalone: True - standalone version, False - part of Peppy player
@@ -50,17 +50,14 @@ class Peppymeter(ScreensaverMeter):
         self.use_vu_meter = getattr(self.util, USE_VU_METER, None)
 
         self.name = "peppymeter"
+        self.quit_pygame_on_stop = quit_pygame_on_stop
 
-        base_path = "."
-        if __package__:
-            pkg_parts = __package__.split(".")
-            if len(pkg_parts) > 0:
-                base_path = os.path.join(os.getcwd(), "screensaver", self.name)
-
-        parser = ConfigFileParser(base_path)
+        parser = ConfigFileParser()
         self.util.meter_config = parser.meter_config
         self.util.exit_function = self.exit
         self.outputs = {}
+        self.timer_controlled_random_meter = timer_controlled_random_meter
+        self.dependent = None
 
         if standalone:
             if self.util.meter_config[USE_LOGGING]:
@@ -108,7 +105,7 @@ class Peppymeter(ScreensaverMeter):
         :data_source: data source
         :return: graphical VU Meter
         """
-        meter = Vumeter(self.util, data_source)
+        meter = Vumeter(self.util, data_source, self.timer_controlled_random_meter)
         self.current_image = None
         self.update_period = meter.get_update_period()
 
@@ -177,6 +174,7 @@ class Peppymeter(ScreensaverMeter):
         if self.util.meter_config[DATA_SOURCE][TYPE] == SOURCE_PIPE or self.use_vu_meter == True:
             self.data_source.start_data_source()
         self.meter.start()
+        pygame.display.update(self.util.meter_config[SCREEN_RECT])
 
         for v in self.outputs.values():
             v.start_writing()
@@ -187,7 +185,12 @@ class Peppymeter(ScreensaverMeter):
         pygame.event.clear()
         clock = Clock()
         self.meter.start()
+        pygame.display.update(self.util.meter_config[SCREEN_RECT])
         running = True
+        exit_events = [pygame.MOUSEBUTTONUP]
+
+        if pygame.version.ver.startswith("2"):
+            exit_events.append(pygame.FINGERUP)
 
         while running:
             for event in pygame.event.get():
@@ -197,15 +200,22 @@ class Peppymeter(ScreensaverMeter):
                     keys = pygame.key.get_pressed()
                     if (keys[pygame.K_LCTRL] or keys[pygame.K_RCTRL]) and event.key == pygame.K_c:
                         running = False
-                elif event.type == pygame.MOUSEBUTTONUP and (self.util.meter_config[EXIT_ON_TOUCH] or self.util.meter_config[STOP_DISPLAY_ON_TOUCH]):
+                elif event.type in exit_events and (self.util.meter_config[EXIT_ON_TOUCH] or self.util.meter_config[STOP_DISPLAY_ON_TOUCH]):
                     running = False
 
+            areas = self.meter.run()
+            pygame.display.update(areas)
             self.refresh()
+
+            if self.dependent:
+                self.dependent()
+
             clock.tick(self.util.meter_config[FRAME_RATE])
 
         if self.util.meter_config[STOP_DISPLAY_ON_TOUCH]:
             self.meter.stop()
-            pygame.quit()
+            if self.quit_pygame_on_stop:
+                pygame.quit()
         else:
             self.exit()
 
@@ -217,6 +227,11 @@ class Peppymeter(ScreensaverMeter):
                 v.stop_writing()
             self.data_source.stop_data_source()
         self.meter.stop()
+
+    def restart(self):
+        """ Restart random meter """
+
+        self.meter.restart()
 
     def refresh(self):
         """Refresh meter. Used to switch from one random meter to another."""
@@ -251,7 +266,8 @@ class Peppymeter(ScreensaverMeter):
 
 
 if __name__ == "__main__":
-    """This is called by stand-alone PeppyMeter"""
+    """ This is called by stand-alone PeppyMeter """
+
     pm = Peppymeter(standalone=True)
     source = pm.util.meter_config[DATA_SOURCE][TYPE]
 
