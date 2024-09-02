@@ -2,6 +2,8 @@
 
 This is a modification of original [PeppyMeter] which is used by [PHTS NP-01].
 
+Currently not used as a standalone plugin due to compatibility issues with `FusionDsp` and `Spotify` plugins. Used as an internal repo fetched by [my fork of `Peppy-meter-Basic` plugin](https://github.com/phts/NP-01_plugins/tree/master/peppymeterbasic).
+
 Noticeable changes:
 
 - Add time type "counter"
