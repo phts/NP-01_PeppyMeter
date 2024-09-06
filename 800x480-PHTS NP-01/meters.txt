@@ -193,3 +193,21 @@ font.size.light = 20
 font.size.regular = 24
 font.size.bold = 36
 font.color = 255,255,255
+
+[Radiotehnika МП-7201 (without counter)]
+meter.type = linear
+channels = 2
+ui.refresh.period = 0.033
+bgr.filename = mp7101-without-counter_bgr.png
+indicator.filename = mp7101-without-counter_ind.png
+left.x = 199
+left.y = 147
+right.x = 199
+right.y = 288
+position.regular = 9
+position.overload = 4
+step.width.regular = 40
+step.width.overload = 47
+meter.x = 0
+meter.y = 0
+screen.bgr =
